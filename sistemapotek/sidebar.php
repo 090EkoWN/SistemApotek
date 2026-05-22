@@ -1,6 +1,6 @@
 <?php
 // ============================================================
-// includes/sidebar.php — Komponen Sidebar (dipakai semua halaman)
+// sidebar.php — Komponen Sidebar (dipakai semua halaman)
 // ============================================================
 
 // Tentukan halaman aktif berdasarkan URL

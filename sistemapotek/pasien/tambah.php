@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 <div class="app-wrap">
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include '../sidebar.php'; ?>
     <div class="main-content">
         <div class="topbar">
             <div class="topbar-left">

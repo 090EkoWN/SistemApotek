@@ -24,7 +24,7 @@ $result = $koneksi->query("SELECT * FROM pasien $where ORDER BY id_pasien DESC")
 </head>
 <body>
 <div class="app-wrap">
-    <?php include '../includes/sidebar.php'; ?>
+    <?php include '../sidebar.php'; ?>
     <div class="main-content">
         <div class="topbar">
             <div class="topbar-left">

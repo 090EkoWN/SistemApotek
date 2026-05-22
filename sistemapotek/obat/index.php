@@ -2,65 +2,65 @@
 require_once '../auth.php';
 require_once '../koneksi.php';
 
-// Pesan notifikasi dari redirect
-$msg  = $_GET['msg']  ?? '';
-$type = $_GET['type'] ?? 'success';
-
-// Pencarian
+$msg    = $_GET['msg']    ?? '';
+$type   = $_GET['type']   ?? 'success';
 $search = trim($_GET['search'] ?? '');
 $where  = '';
+
 if ($search !== '') {
     $s     = $koneksi->real_escape_string($search);
-    $where = "WHERE nama_obat LIKE '%$s%' OR kategori LIKE '%$s%'";
+    $where = "WHERE p.nama_pasien LIKE '%$s%' OR o.nama_obat LIKE '%$s%'";
 }
 
-$result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
+$result = $koneksi->query(
+    "SELECT po.*, p.nama_pasien, o.nama_obat, o.harga
+     FROM pemberian_obat po
+     JOIN pasien p ON po.id_pasien = p.id_pasien
+     JOIN obat   o ON po.id_obat   = o.id_obat
+     $where
+     ORDER BY po.id_transaksi DESC"
+);
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Obat — <?= APP_NAME ?></title>
+    <title>Pemberian Obat — <?= APP_NAME ?></title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 <div class="app-wrap">
-
-    <?php include '../includes/sidebar.php'; ?>
-
+    <?php include '../sidebar.php'; ?>
     <div class="main-content">
-        <!-- Topbar -->
+
         <div class="topbar">
             <div class="topbar-left">
                 <button class="hamburger" onclick="toggleSidebar()">☰</button>
                 <div class="topbar-title">
-                    <h2>Data Obat</h2>
+                    <h2>Pemberian Obat</h2>
                     <div class="topbar-breadcrumb">
-                        <a href="../dashboard.php">Dashboard</a>
-                        <span class="sep"> / </span>
-                        <span class="cur">Data Obat</span>
+                        <a href="../dashboard.php">Dashboard</a> <span class="sep">/</span>
+                        <span class="cur">Pemberian Obat</span>
                     </div>
                 </div>
             </div>
             <div class="topbar-right">
-                <div class="topbar-info">
-                    <span class="topbar-dot"></span><?= date('d M Y') ?>
-                </div>
+                <div class="topbar-info"><span class="topbar-dot"></span><?= date('d M Y') ?></div>
             </div>
         </div>
 
         <div class="page-body">
 
-            <!-- Alert notifikasi -->
             <?php if ($msg): ?>
             <div class="alert alert-<?= $type === 'success' ? 'success' : 'danger' ?>">
                 <span class="alert-icon"><?= $type === 'success' ? '✅' : '❌' ?></span>
                 <?php
                 $pesan = [
-                    'tambah_ok' => 'Data obat berhasil ditambahkan.',
-                    'edit_ok'   => 'Data obat berhasil diperbarui.',
-                    'hapus_ok'  => 'Data obat berhasil dihapus.',
+                    'tambah_ok' => 'Transaksi pemberian obat berhasil dicatat.',
+                    'edit_ok'   => 'Transaksi berhasil diperbarui.',
+                    'hapus_ok'  => 'Transaksi berhasil dihapus.',
+                    'stok_habis'=> 'Gagal: stok obat tidak mencukupi.',
                     'gagal'     => 'Terjadi kesalahan. Silakan coba lagi.',
                 ];
                 echo $pesan[$msg] ?? htmlspecialchars($msg);
@@ -68,37 +68,26 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
             </div>
             <?php endif; ?>
 
-            <!-- Header + Toolbar -->
             <div class="page-header">
                 <div>
-                    <h1>💊 Data Obat</h1>
-                    <p>Kelola seluruh data stok obat apotek</p>
+                    <h1>📋 Pemberian Obat</h1>
+                    <p>Catatan transaksi pemberian obat kepada pasien</p>
                 </div>
-                <a href="tambah.php" class="btn btn-primary">+ Tambah Obat</a>
+                <a href="tambah.php" class="btn btn-primary">+ Catat Pemberian</a>
             </div>
 
             <div class="card">
-                <!-- Toolbar pencarian -->
                 <div class="card-head">
-                    <div class="card-title">
-                        <span class="card-icon">💊</span>
-                        Daftar Obat
-                    </div>
+                    <div class="card-title"><span class="card-icon">📋</span> Daftar Transaksi</div>
                     <form method="GET" class="data-toolbar">
-                        <input
-                            type="text"
-                            name="search"
-                            class="form-control"
-                            placeholder="🔍 Cari nama atau kategori..."
-                            value="<?= htmlspecialchars($search) ?>"
-                        >
+                        <input type="text" name="search" class="form-control"
+                            placeholder="🔍 Cari nama pasien atau obat..."
+                            value="<?= htmlspecialchars($search) ?>">
                         <button type="submit" class="btn btn-ghost btn-sm">Cari</button>
                         <?php if ($search): ?>
                         <a href="index.php" class="btn btn-ghost btn-sm">✕ Reset</a>
                         <?php endif; ?>
-                        <span class="data-count">
-                            <?= $result ? $result->num_rows : 0 ?> data
-                        </span>
+                        <span class="data-count"><?= $result ? $result->num_rows : 0 ?> data</span>
                     </form>
                 </div>
 
@@ -108,11 +97,13 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                         <thead>
                             <tr>
                                 <th class="td-no">No</th>
-                                <th>Nama Obat</th>
-                                <th>Kategori</th>
-                                <th>Stok</th>
-                                <th>Harga</th>
-                                <th>Expired</th>
+                                <th>Tanggal</th>
+                                <th>Pasien</th>
+                                <th>Obat</th>
+                                <th>Jumlah</th>
+                                <th>Dosis</th>
+                                <th>Total</th>
+                                <th>Keterangan</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -120,33 +111,21 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                             <?php $no = 1; while ($row = $result->fetch_assoc()): ?>
                             <tr>
                                 <td class="td-no"><?= $no++ ?></td>
-                                <td class="td-bold"><?= htmlspecialchars($row['nama_obat']) ?></td>
-                                <td><span class="badge badge-navy"><?= htmlspecialchars($row['kategori']) ?></span></td>
-                                <td>
-                                    <?php
-                                    $stok = $row['stok'];
-                                    $cls  = $stok == 0 ? 'low' : ($stok <= 10 ? 'warn' : 'ok');
-                                    ?>
-                                    <span class="stok <?= $cls ?>"><?= $stok ?></span>
-                                </td>
-                                <td class="td-mono">Rp <?= number_format($row['harga'], 0, ',', '.') ?></td>
-                                <td>
-                                    <?php
-                                    $exp   = strtotime($row['tanggal_expired']);
-                                    $today = time();
-                                    $sisa  = ceil(($exp - $today) / 86400);
-                                    $badge = $sisa < 0 ? 'badge-red' : ($sisa <= 30 ? 'badge-amber' : 'badge-teal');
-                                    ?>
-                                    <span class="badge <?= $badge ?>">
-                                        <?= date('d/m/Y', $exp) ?>
-                                    </span>
+                                <td><?= date('d/m/Y', strtotime($row['tanggal_pemberian'])) ?></td>
+                                <td class="td-bold"><?= htmlspecialchars($row['nama_pasien']) ?></td>
+                                <td><?= htmlspecialchars($row['nama_obat']) ?></td>
+                                <td><span class="badge badge-teal"><?= $row['jumlah'] ?></span></td>
+                                <td><?= htmlspecialchars($row['dosis']) ?></td>
+                                <td class="td-mono">Rp <?= number_format($row['harga'] * $row['jumlah'], 0, ',', '.') ?></td>
+                                <td class="td-muted" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                                    <?= htmlspecialchars($row['keterangan'] ?? '-') ?>
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="edit.php?id=<?= $row['id_obat'] ?>" class="btn btn-amber btn-sm">✏️ Edit</a>
-                                        <a href="hapus.php?id=<?= $row['id_obat'] ?>"
+                                        <a href="edit.php?id=<?= $row['id_transaksi'] ?>" class="btn btn-amber btn-sm">✏️ Edit</a>
+                                        <a href="hapus.php?id=<?= $row['id_transaksi'] ?>"
                                            class="btn btn-danger btn-sm"
-                                           onclick="return confirm('Yakin hapus obat <?= htmlspecialchars(addslashes($row['nama_obat'])) ?>?')">
+                                           onclick="return confirm('Yakin hapus transaksi ini?')">
                                            🗑️ Hapus
                                         </a>
                                     </div>
@@ -157,29 +136,23 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                     </table>
                     <?php else: ?>
                     <div class="empty">
-                        <span class="empty-icon">💊</span>
-                        <p><?= $search ? 'Tidak ada obat yang cocok dengan pencarian.' : 'Belum ada data obat.' ?></p>
-                        <a href="tambah.php" class="btn btn-primary btn-sm">+ Tambah Obat Pertama</a>
+                        <span class="empty-icon">📋</span>
+                        <p><?= $search ? 'Tidak ada transaksi yang cocok.' : 'Belum ada data pemberian obat.' ?></p>
+                        <a href="tambah.php" class="btn btn-primary btn-sm">+ Catat Pemberian Pertama</a>
                     </div>
                     <?php endif; ?>
                 </div>
 
                 <div class="card-foot">
-                    <span>Total: <strong><?= $result ? $result->num_rows : 0 ?></strong> obat</span>
-                    <a href="tambah.php" class="btn btn-primary btn-sm">+ Tambah Obat</a>
+                    <span>Total: <strong><?= $result ? $result->num_rows : 0 ?></strong> transaksi</span>
+                    <a href="tambah.php" class="btn btn-primary btn-sm">+ Catat Pemberian</a>
                 </div>
             </div>
 
         </div>
     </div>
 </div>
-
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
-<script>
-function toggleSidebar() {
-    document.querySelector('.sidebar').classList.toggle('open');
-    document.getElementById('overlay').classList.toggle('show');
-}
-</script>
+<script>function toggleSidebar(){document.querySelector('.sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');}</script>
 </body>
 </html>
