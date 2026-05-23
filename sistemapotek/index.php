@@ -5,9 +5,13 @@
 session_start();
 require_once 'koneksi.php';
 
-// Sudah login → dashboard
+// Sudah login → dashboard sesuai role
 if (isset($_SESSION['id_user'])) {
-    header('Location: dashboard.php');
+    if (isset($_SESSION['role']) && $_SESSION['role'] === 'pasien') {
+        header('Location: pasien_dashboard.php');
+    } else {
+        header('Location: dashboard.php');
+    }
     exit();
 }
 
@@ -29,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Prepared statement — aman dari SQL Injection
         $stmt = $koneksi->prepare(
-            "SELECT id_user, username, password, nama_lengkap FROM users WHERE username = ? LIMIT 1"
+            "SELECT id_user, username, password, nama_lengkap, role FROM users WHERE username = ? LIMIT 1"
         );
         $stmt->bind_param('s', $username);
         $stmt->execute();
@@ -46,8 +50,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['id_user']       = $user['id_user'];
                 $_SESSION['username']      = $user['username'];
                 $_SESSION['nama_lengkap']  = $user['nama_lengkap'];
+                $_SESSION['role']          = $user['role'] ?? 'admin';
                 $_SESSION['last_activity'] = time();
-                header('Location: dashboard.php');
+                
+                // Redirect berdasarkan role
+                if ($_SESSION['role'] === 'pasien') {
+                    header('Location: pasien_dashboard.php');
+                } else {
+                    header('Location: dashboard.php');
+                }
                 exit();
             } else {
                 $error = 'Password salah. Coba lagi.';

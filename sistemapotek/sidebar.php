@@ -14,13 +14,16 @@ $is_transaksi  = strpos($current, '/transaksi/') !== false;
 $nama = $_SESSION['nama_lengkap'] ?? 'User';
 $inisial = strtoupper(substr($nama, 0, 1));
 
-// Deteksi base path aplikasi - cari folder 'sistemapotek' atau 'apotek'
+// Deteksi base path aplikasi - ambil sampai folder aplikasi
 $script_path = $_SERVER['SCRIPT_NAME'];
 $base_path = '/';
 
-// Cari posisi folder aplikasi (sistemapotek, apotek, atau apotek_fix)
-if (preg_match('#/(sistemapotek|apotek|apotek_fix)/#', $script_path, $matches)) {
-    $base_path = '/' . $matches[1] . '/';
+// Cari posisi folder aplikasi dan ambil full path sebelumnya
+// Contoh: /tugasakhir/SistemApotek1/sistemapotek/dashboard.php -> /tugasakhir/SistemApotek1/sistemapotek/
+if (preg_match('#^(.*?/(sistemapotek|apotek|apotek_fix))/#', $script_path, $matches)) {
+    $base_path = $matches[1] . '/';
+} elseif (preg_match('#^(.*?sistemapotek)/#', $script_path, $matches)) {
+    $base_path = $matches[1] . '/';
 }
 ?>
 
