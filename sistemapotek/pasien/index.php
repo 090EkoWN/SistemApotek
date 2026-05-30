@@ -1,4 +1,7 @@
 <?php
+// ============================================================
+// pasien/index.php — Daftar Data Pasien
+// ============================================================
 require_once '../auth.php';
 require_once '../koneksi.php';
 
@@ -9,10 +12,22 @@ $where  = '';
 
 if ($search !== '') {
     $s     = $koneksi->real_escape_string($search);
-    $where = "WHERE nama_pasien LIKE '%$s%' OR no_hp LIKE '%$s%'";
+    $where = "WHERE p.nama_pasien LIKE '%$s%' OR p.no_hp LIKE '%$s%'";
 }
 
-$result = $koneksi->query("SELECT * FROM pasien $where ORDER BY id_pasien DESC");
+// JOIN dengan users untuk tampilkan username (jika kolom id_user ada)
+$col_check = $koneksi->query("SHOW COLUMNS FROM pasien LIKE 'id_user'");
+$has_id_user = ($col_check && $col_check->num_rows > 0);
+
+if ($has_id_user) {
+    $result = $koneksi->query(
+        "SELECT p.*, u.username FROM pasien p
+         LEFT JOIN users u ON p.id_user = u.id_user
+         $where ORDER BY p.id_pasien DESC"
+    );
+} else {
+    $result = $koneksi->query("SELECT * FROM pasien p $where ORDER BY id_pasien DESC");
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -91,6 +106,9 @@ $result = $koneksi->query("SELECT * FROM pasien $where ORDER BY id_pasien DESC")
                                 <th>No. HP</th>
                                 <th>Tgl. Lahir</th>
                                 <th>Alamat</th>
+                                <?php if ($has_id_user): ?>
+                                <th>Akun Login</th>
+                                <?php endif; ?>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -104,12 +122,21 @@ $result = $koneksi->query("SELECT * FROM pasien $where ORDER BY id_pasien DESC")
                                 <td class="td-muted" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
                                     <?= htmlspecialchars($row['alamat']) ?>
                                 </td>
+                                <?php if ($has_id_user): ?>
+                                <td>
+                                    <?php if (!empty($row['username'])): ?>
+                                    <span class="badge badge-teal">✅ <?= htmlspecialchars($row['username']) ?></span>
+                                    <?php else: ?>
+                                    <span class="badge badge-navy" style="opacity:.6">— Belum ada</span>
+                                    <?php endif; ?>
+                                </td>
+                                <?php endif; ?>
                                 <td>
                                     <div class="btn-group">
                                         <a href="edit.php?id=<?= $row['id_pasien'] ?>" class="btn btn-amber btn-sm">✏️ Edit</a>
                                         <a href="hapus.php?id=<?= $row['id_pasien'] ?>"
                                            class="btn btn-danger btn-sm"
-                                           onclick="return confirm('Yakin hapus pasien <?= htmlspecialchars(addslashes($row['nama_pasien'])) ?>?')">
+                                           onclick="return confirm('Yakin hapus pasien ini?')">
                                            🗑️ Hapus
                                         </a>
                                     </div>
@@ -122,7 +149,7 @@ $result = $koneksi->query("SELECT * FROM pasien $where ORDER BY id_pasien DESC")
                     <div class="empty">
                         <span class="empty-icon">👤</span>
                         <p><?= $search ? 'Tidak ada pasien yang cocok.' : 'Belum ada data pasien.' ?></p>
-                        <a href="tambah.php" class="btn btn-primary btn-sm">+ Tambah Pasien</a>
+                        <a href="tambah.php" class="btn btn-primary btn-sm">+ Tambah Pasien Pertama</a>
                     </div>
                     <?php endif; ?>
                 </div>
