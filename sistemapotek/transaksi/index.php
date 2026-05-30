@@ -1,4 +1,7 @@
 <?php
+// ============================================================
+// transaksi/index.php — Daftar Pemberian Obat
+// ============================================================
 require_once '../auth.php';
 require_once '../koneksi.php';
 
@@ -57,11 +60,11 @@ $result = $koneksi->query(
                 <span class="alert-icon"><?= $type === 'success' ? '✅' : '❌' ?></span>
                 <?php
                 $pesan = [
-                    'tambah_ok' => 'Transaksi pemberian obat berhasil dicatat.',
-                    'edit_ok'   => 'Transaksi berhasil diperbarui.',
-                    'hapus_ok'  => 'Transaksi berhasil dihapus.',
-                    'stok_habis'=> 'Gagal: stok obat tidak mencukupi.',
-                    'gagal'     => 'Terjadi kesalahan. Silakan coba lagi.',
+                    'tambah_ok'  => 'Pemberian obat berhasil dicatat.',
+                    'edit_ok'    => 'Transaksi berhasil diperbarui.',
+                    'hapus_ok'   => 'Transaksi berhasil dihapus.',
+                    'stok_habis' => 'Gagal: stok obat tidak mencukupi.',
+                    'gagal'      => 'Terjadi kesalahan. Silakan coba lagi.',
                 ];
                 echo $pesan[$msg] ?? htmlspecialchars($msg);
                 ?>
@@ -125,7 +128,7 @@ $result = $koneksi->query(
                                         <a href="edit.php?id=<?= $row['id_transaksi'] ?>" class="btn btn-amber btn-sm">✏️ Edit</a>
                                         <a href="hapus.php?id=<?= $row['id_transaksi'] ?>"
                                            class="btn btn-danger btn-sm"
-                                           onclick="return confirm('Yakin hapus transaksi ini?')">
+                                           onclick="return confirm('Yakin hapus transaksi ini? Stok obat akan dikembalikan.')">
                                            🗑️ Hapus
                                         </a>
                                     </div>
