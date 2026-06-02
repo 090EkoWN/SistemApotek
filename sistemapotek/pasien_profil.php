@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="sb-brand">
-            <div class="sb-brand-icon">💊</div>
+            <div class="sb-brand-icon">PS</div>
             <div>
                 <div class="sb-brand-name"><?= APP_NAME ?></div>
                 <div class="sb-brand-sub">Portal Pasien</div>
@@ -74,17 +74,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
             <div class="sb-group-label">MENU PASIEN</div>
             
             <a href="pasien_dashboard.php" class="sb-item">
-                <span class="sb-icon">🏠</span>
+                <span class="sb-icon">▣</span>
                 Dashboard
             </a>
             
             <a href="pasien_riwayat.php" class="sb-item">
-                <span class="sb-icon">📋</span>
+                <span class="sb-icon">▤</span>
                 Riwayat Obat
             </a>
             
             <a href="pasien_profil.php" class="sb-item active">
-                <span class="sb-icon">👤</span>
+                <span class="sb-icon">◌</span>
                 Profil Saya
             </a>
         </nav>
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
                     <div class="sb-urole">Pasien</div>
                 </div>
             </div>
-            <a href="logout.php" class="sb-logout">🚪 Keluar</a>
+            <a href="logout.php" class="sb-logout"> Keluar</a>
         </div>
     </aside>
 
@@ -126,21 +126,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
         <div class="page-body">
             <div class="page-header">
                 <div>
-                    <h1>👤 Profil Saya</h1>
+                    <h1>Profil Saya</h1>
                     <p>Kelola informasi pribadi Anda</p>
                 </div>
             </div>
 
             <?php if ($success): ?>
             <div class="alert alert-success">
-                <span class="alert-icon">✅</span>
+                <span class="alert-icon">✓</span>
                 <div><?= htmlspecialchars($success) ?></div>
             </div>
             <?php endif; ?>
 
             <?php if (!empty($errors)): ?>
             <div class="alert alert-danger">
-                <span class="alert-icon">❌</span>
+               <span class="alert-icon">!</span>
                 <div>
                     <strong>Terdapat kesalahan:</strong>
                     <ul style="margin:.3rem 0 0 1rem">
@@ -154,7 +154,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
 
             <?php if (!$pasien): ?>
             <div class="alert alert-warning">
-                <span class="alert-icon">⚠️</span>
+                <div class="card-title">
+                    Informasi Akun
+                </div>
                 <div>
                     <strong>Data Tidak Tersedia</strong><br>
                     Akun Anda belum terhubung dengan data pasien. Hubungi administrator.
@@ -166,7 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
-                        <span class="card-icon">🔐</span>
                         Informasi Akun
                     </div>
                 </div>
@@ -195,13 +196,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
-                        <span class="card-icon">📝</span>
                         Data Pribadi
                     </div>
                 </div>
+                
                 <div class="card-body">
                     <form method="POST">
                         <div class="form-grid">
+                            
                             <div class="form-group">
                                 <label>Tanggal Lahir</label>
                                 <input type="date" class="form-control" 
@@ -225,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">💾 Simpan Perubahan</button>
+                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                             <a href="pasien_dashboard.php" class="btn btn-ghost">Kembali</a>
                         </div>
                     </form>

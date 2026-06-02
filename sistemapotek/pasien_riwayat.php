@@ -55,7 +55,7 @@ $riwayat = $koneksi->query($query);
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="sb-brand">
-            <div class="sb-brand-icon">💊</div>
+            <div class="sb-brand-icon">PS</div>
             <div>
                 <div class="sb-brand-name"><?= APP_NAME ?></div>
                 <div class="sb-brand-sub">Portal Pasien</div>
@@ -66,17 +66,17 @@ $riwayat = $koneksi->query($query);
             <div class="sb-group-label">MENU PASIEN</div>
             
             <a href="pasien_dashboard.php" class="sb-item">
-                <span class="sb-icon">🏠</span>
+                <span class="sb-icon">▣</span>
                 Dashboard
             </a>
             
             <a href="pasien_riwayat.php" class="sb-item active">
-                <span class="sb-icon">📋</span>
+                <span class="sb-icon">▤</span>
                 Riwayat Obat
             </a>
             
             <a href="pasien_profil.php" class="sb-item">
-                <span class="sb-icon">👤</span>
+                <span class="sb-icon">◌</span>
                 Profil Saya
             </a>
         </nav>
@@ -89,7 +89,7 @@ $riwayat = $koneksi->query($query);
                     <div class="sb-urole">Pasien</div>
                 </div>
             </div>
-            <a href="logout.php" class="sb-logout">🚪 Keluar</a>
+            <a href="logout.php" class="sb-logout"> Keluar</a>
         </div>
     </aside>
 
@@ -118,14 +118,14 @@ $riwayat = $koneksi->query($query);
         <div class="page-body">
             <div class="page-header">
                 <div>
-                    <h1>📋 Riwayat Pemberian Obat</h1>
-                    <p>Lihat semua riwayat pengobatan Anda</p>
+                    <h1>Riwayat Pemberian Obat</h1>
+                    <p>Daftar seluruh obat yang pernah diberikan kepada Anda.</p>
                 </div>
             </div>
 
             <?php if (!$id_pasien): ?>
             <div class="alert alert-warning">
-                <span class="alert-icon">⚠️</span>
+                <<span class="alert-icon">!</span>
                 <div>
                     <strong>Data Tidak Tersedia</strong><br>
                     Akun Anda belum terhubung dengan data pasien. Hubungi administrator.
@@ -138,7 +138,7 @@ $riwayat = $koneksi->query($query);
                 <div class="card-body">
                     <form method="GET" class="search-form">
                         <input type="text" name="search" class="form-control" 
-                               placeholder="🔍 Cari nama obat atau dosis..." 
+                               placeholder=" Cari nama obat atau dosis..." 
                                value="<?= htmlspecialchars($search) ?>">
                         <button type="submit" class="btn btn-primary">Cari</button>
                         <?php if ($search): ?>
@@ -147,12 +147,24 @@ $riwayat = $koneksi->query($query);
                     </form>
                 </div>
             </div>
+            <div class="stats-row">
 
+            <div class="stat-card teal">
+                <div class="stat-info">
+                    <div class="stat-num">
+                        <?= $riwayat ? $riwayat->num_rows : 0 ?>
+                    </div>
+                <div class="stat-label">
+                    Total Riwayat
+                </div>
+            </div>
+            </div>
+
+            </div>
             <!-- Tabel Riwayat -->
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
-                        <span class="card-icon">📋</span>
                         Daftar Riwayat Pemberian Obat
                         <?php if ($search): ?>
                         <span style="font-size:0.9rem;color:#64748b;font-weight:normal">
@@ -195,7 +207,7 @@ $riwayat = $koneksi->query($query);
                     </table>
                     <?php else: ?>
                     <div class="empty">
-                        <span class="empty-icon">📋</span>
+                        <span class="empty-icon">—</span>
                         <p><?= $search ? 'Tidak ada hasil pencarian' : 'Belum ada riwayat pemberian obat' ?></p>
                     </div>
                     <?php endif; ?>

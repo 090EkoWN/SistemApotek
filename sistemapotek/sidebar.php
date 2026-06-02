@@ -27,7 +27,9 @@ $base_path = $is_subdir ? '../' : '';
 <aside class="sidebar" id="sidebar">
 
     <div class="sb-brand">
-        <div class="sb-brand-icon">💊</div>
+        <div class="sb-brand-icon">
+            AP
+        </div>
         <div>
             <div class="sb-brand-name"><?= APP_NAME ?></div>
             <div class="sb-brand-sub">Sistem Apotek</div>
@@ -37,24 +39,27 @@ $base_path = $is_subdir ? '../' : '';
     <nav class="sb-nav">
         <div class="sb-group-label">MENU UTAMA</div>
         <a href="<?= $base_path ?>dashboard.php"
-           class="sb-item <?= $is_dashboard ? 'active' : '' ?>">
-            <span class="sb-icon">🏠</span> Dashboard
+        class="sb-item <?= $is_dashboard ? 'active' : '' ?>">
+        <span class="sb-icon">▣</span>
+             Dashboard
         </a>
 
-        <div class="sb-group-label">DATA MASTER</div>
         <a href="<?= $base_path ?>obat/index.php"
-           class="sb-item <?= $is_obat ? 'active' : '' ?>">
-            <span class="sb-icon">💊</span> Data Obat
-        </a>
-        <a href="<?= $base_path ?>pasien/index.php"
-           class="sb-item <?= $is_pasien ? 'active' : '' ?>">
-            <span class="sb-icon">👤</span> Data Pasien
+        class="sb-item <?= $is_obat ? 'active' : '' ?>">
+        <span class="sb-icon">◉</span>
+            Data Obat
         </a>
 
-        <div class="sb-group-label">TRANSAKSI</div>
+        <a href="<?= $base_path ?>pasien/index.php"
+        class="sb-item <?= $is_pasien ? 'active' : '' ?>">
+        <span class="sb-icon">◌</span>
+            Data Pasien
+        </a>
+
         <a href="<?= $base_path ?>transaksi/index.php"
-           class="sb-item <?= $is_transaksi ? 'active' : '' ?>">
-            <span class="sb-icon">📋</span> Pemberian Obat
+        class="sb-item <?= $is_transaksi ? 'active' : '' ?>">
+        <span class="sb-icon">▤</span>
+            Pemberian Obat
         </a>
     </nav>
 
@@ -63,11 +68,13 @@ $base_path = $is_subdir ? '../' : '';
             <div class="sb-avatar"><?= $inisial ?></div>
             <div>
                 <div class="sb-uname"><?= htmlspecialchars($nama) ?></div>
-                <div class="sb-urole">Administrator</div>
+                <div class="sb-urole">
+                    <?= ucfirst($_SESSION['role'] ?? 'Admin') ?>
+                </div>
             </div>
         </div>
         <a href="<?= $base_path ?>logout.php" class="sb-logout">
-            🚪 Keluar
+            Keluar
         </a>
     </div>
 

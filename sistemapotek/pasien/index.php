@@ -34,7 +34,7 @@ if ($has_id_user) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Pasien — <?= APP_NAME ?></title>
+    <title>Manajemen Pasien — <?= APP_NAME ?></title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -60,7 +60,7 @@ if ($has_id_user) {
         <div class="page-body">
             <?php if ($msg): ?>
             <div class="alert alert-<?= $type === 'success' ? 'success' : 'danger' ?>">
-                <span class="alert-icon"><?= $type === 'success' ? '✅' : '❌' ?></span>
+                <span class="alert-icon"><?= $type === 'success' ? '✓' : '!' ?></span>
                 <?php
                 $pesan = [
                     'tambah_ok' => 'Data pasien berhasil ditambahkan.',
@@ -75,7 +75,7 @@ if ($has_id_user) {
 
             <div class="page-header">
                 <div>
-                    <h1>👤 Data Pasien</h1>
+                    <h1>Manajemen Pasien</h1>
                     <p>Kelola seluruh data pasien apotek</p>
                 </div>
                 <a href="tambah.php" class="btn btn-primary">+ Tambah Pasien</a>
@@ -83,19 +83,80 @@ if ($has_id_user) {
 
             <div class="card">
                 <div class="card-head">
-                    <div class="card-title"><span class="card-icon">👤</span> Daftar Pasien</div>
+                    <div class="card-title"></span> Daftar Pasien</div>
                     <form method="GET" class="data-toolbar">
                         <input type="text" name="search" class="form-control"
-                            placeholder="🔍 Cari nama atau no HP..."
+                            placeholder="Cari nama pasien atau nomor telepon..."
                             value="<?= htmlspecialchars($search) ?>">
                         <button type="submit" class="btn btn-ghost btn-sm">Cari</button>
                         <?php if ($search): ?>
-                        <a href="index.php" class="btn btn-ghost btn-sm">✕ Reset</a>
+                        <a href="index.php" class="btn btn-ghost btn-sm">Reset</a>
                         <?php endif; ?>
                         <span class="data-count"><?= $result ? $result->num_rows : 0 ?> data</span>
                     </form>
                 </div>
+                <?php
 
+                $total_pasien =
+                $result
+                ? $result->num_rows
+                : 0;
+
+                $q_login = $koneksi->query("
+                SELECT COUNT(*) total
+                FROM pasien
+                WHERE id_user IS NOT NULL
+                ");
+
+                $pasien_login =
+                $q_login->fetch_assoc()['total'];
+
+                $q_nonlogin = $koneksi->query("
+                SELECT COUNT(*) total
+                FROM pasien
+                WHERE id_user IS NULL
+                ");
+
+                $pasien_nonlogin =
+                $q_nonlogin->fetch_assoc()['total'];
+
+                ?>
+                <div class="stats-row">
+
+                    <div class="stat-card navy">
+                        <div class="stat-info">
+                            <div class="stat-num">
+                                <?= $total_pasien ?>
+                            </div>
+                            <div class="stat-label">
+                                Total Pasien
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card teal">
+                        <div class="stat-info">
+                            <div class="stat-num">
+                                <?= $pasien_login ?>
+                            </div>
+                            <div class="stat-label">
+                                Akun Aktif
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card amber">
+                        <div class="stat-info">
+                            <div class="stat-num">
+                                <?= $pasien_nonlogin ?>
+                            </div>
+                            <div class="stat-label">
+                                Belum Terhubung
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
                 <div class="table-wrap">
                     <?php if ($result && $result->num_rows > 0): ?>
                     <table>
@@ -123,21 +184,26 @@ if ($has_id_user) {
                                     <?= htmlspecialchars($row['alamat']) ?>
                                 </td>
                                 <?php if ($has_id_user): ?>
+                                    
                                 <td>
                                     <?php if (!empty($row['username'])): ?>
-                                    <span class="badge badge-teal">✅ <?= htmlspecialchars($row['username']) ?></span>
+                                    <span class="badge badge-teal">Aktif</span>
                                     <?php else: ?>
                                     <span class="badge badge-navy" style="opacity:.6">— Belum ada</span>
                                     <?php endif; ?>
+                                    <div class="td-muted">
+                                    <?= htmlspecialchars($row['username']) ?>
+                                    </div>
                                 </td>
+                                
                                 <?php endif; ?>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="edit.php?id=<?= $row['id_pasien'] ?>" class="btn btn-amber btn-sm">✏️ Edit</a>
+                                        <a href="edit.php?id=<?= $row['id_pasien'] ?>" class="btn btn-amber btn-sm"> Edit</a>
                                         <a href="hapus.php?id=<?= $row['id_pasien'] ?>"
                                            class="btn btn-danger btn-sm"
                                            onclick="return confirm('Yakin hapus pasien ini?')">
-                                           🗑️ Hapus
+                                           Hapus
                                         </a>
                                     </div>
                                 </td>
@@ -147,7 +213,7 @@ if ($has_id_user) {
                     </table>
                     <?php else: ?>
                     <div class="empty">
-                        <span class="empty-icon">👤</span>
+                        <span class="empty-icon">—</span>
                         <p><?= $search ? 'Tidak ada pasien yang cocok.' : 'Belum ada data pasien.' ?></p>
                         <a href="tambah.php" class="btn btn-primary btn-sm">+ Tambah Pasien Pertama</a>
                     </div>

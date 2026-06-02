@@ -88,25 +88,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="login-side">
         <div class="login-side-inner">
             <div class="ls-logo">
-                <span class="ls-logo-icon">💊</span>
+                <span class="ls-logo-icon">+</span>
                 <span class="ls-logo-text"><?= APP_NAME ?></span>
             </div>
-            <h1 class="ls-title">Sistem Manajemen<br><span>Apotek Digital</span></h1>
+            <h1 class="ls-title">
+                Kelola Apotek Lebih Mudah
+            </h1>
             <p class="ls-desc">
-                Platform terintegrasi untuk pengelolaan data obat,
-                pasien, dan transaksi apotek secara efisien.
+                Sistem informasi untuk mengelola data obat,
+                pasien dan transaksi secara efisien.
             </p>
-            <ul class="ls-features">
-                <li><span class="lsf-icon">💊</span>
-                    <div><strong>Manajemen Stok Obat</strong><em>Kelola inventaris secara real-time</em></div>
-                </li>
-                <li><span class="lsf-icon">👤</span>
-                    <div><strong>Data Pasien Terpusat</strong><em>Rekam data pasien dengan mudah</em></div>
-                </li>
-                <li><span class="lsf-icon">📋</span>
-                    <div><strong>Transaksi Pemberian Obat</strong><em>Catat setiap pemberian secara akurat</em></div>
-                </li>
-            </ul>
             <p class="ls-footer">&copy; <?= date('Y') ?> <?= APP_NAME ?>. All rights reserved.</p>
         </div>
     </div>
@@ -122,14 +113,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php if ($error): ?>
             <div class="alert alert-danger">
-                <span class="alert-icon">⚠️</span>
+                <span class="alert-icon">!</span>
                 <?= htmlspecialchars($error) ?>
             </div>
             <?php endif; ?>
 
             <?php if ($success): ?>
             <div class="alert alert-success">
-                <span class="alert-icon">✅</span>
+                <span class="alert-icon">✓</span>
                 <?= htmlspecialchars($success) ?>
             </div>
             <?php endif; ?>
@@ -140,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label for="username">Username</label>
                     <div class="input-icon-wrap">
-                        <span class="input-icon">👤</span>
+                        <span class="input-icon">U</span>
                         <input
                             type="text"
                             id="username"
@@ -163,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </button>
                     </label>
                     <div class="input-icon-wrap">
-                        <span class="input-icon">🔒</span>
+                        <span class="input-icon">*</span>
                         <input
                             type="password"
                             id="password"
@@ -176,13 +167,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <button type="submit" class="btn-login">
-                    🚀 Masuk ke Sistem
+                     Masuk ke Sistem
                 </button>
 
             </form>
 
             <p class="lb-footer">
-                🔒 Hubungi administrator jika lupa password
+                 Hubungi administrator jika lupa password
             </p>
 
         </div>

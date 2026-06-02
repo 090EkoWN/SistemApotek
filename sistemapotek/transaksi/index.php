@@ -57,7 +57,7 @@ $result = $koneksi->query(
 
             <?php if ($msg): ?>
             <div class="alert alert-<?= $type === 'success' ? 'success' : 'danger' ?>">
-                <span class="alert-icon"><?= $type === 'success' ? '✅' : '❌' ?></span>
+                <span class="alert-icon"><?= $type === 'success' ? '✓' : '!' ?>
                 <?php
                 $pesan = [
                     'tambah_ok'  => 'Pemberian obat berhasil dicatat.',
@@ -72,28 +72,90 @@ $result = $koneksi->query(
             <?php endif; ?>
 
             <div class="page-header">
+                <?php
+                $total_transaksi =
+                $result
+                ? $result->num_rows
+                : 0;
+
+                $q_hari_ini = $koneksi->query("
+                SELECT COUNT(*) total
+                FROM pemberian_obat
+                WHERE DATE(tanggal_pemberian)=CURDATE()
+                ");
+
+                $transaksi_hari_ini =
+                $q_hari_ini->fetch_assoc()['total'];
+
+                $q_bulan_ini = $koneksi->query("
+                SELECT COUNT(*) total
+                FROM pemberian_obat
+                WHERE MONTH(tanggal_pemberian)=MONTH(CURDATE())
+                AND YEAR(tanggal_pemberian)=YEAR(CURDATE())
+                ");
+
+                $transaksi_bulan_ini =
+                $q_bulan_ini->fetch_assoc()['total'];
+                ?>
                 <div>
-                    <h1>📋 Pemberian Obat</h1>
-                    <p>Catatan transaksi pemberian obat kepada pasien</p>
+                    <h1>Manajemen Transaksi</h1>
+                    <p>
+                        Kelola dan pantau seluruh transaksi pemberian obat kepada pasien.
+                    </p>
                 </div>
                 <a href="tambah.php" class="btn btn-primary">+ Catat Pemberian</a>
             </div>
 
             <div class="card">
                 <div class="card-head">
-                    <div class="card-title"><span class="card-icon">📋</span> Daftar Transaksi</div>
+                    <div class="card-title"></span> Daftar Transaksi</div>
                     <form method="GET" class="data-toolbar">
                         <input type="text" name="search" class="form-control"
-                            placeholder="🔍 Cari nama pasien atau obat..."
+                            placeholder=" Cari nama pasien atau obat..."
                             value="<?= htmlspecialchars($search) ?>">
                         <button type="submit" class="btn btn-ghost btn-sm">Cari</button>
                         <?php if ($search): ?>
-                        <a href="index.php" class="btn btn-ghost btn-sm">✕ Reset</a>
+                        <a href="index.php" class="btn btn-ghost btn-sm"> Reset</a>
                         <?php endif; ?>
                         <span class="data-count"><?= $result ? $result->num_rows : 0 ?> data</span>
                     </form>
                 </div>
+                <div class="stats-row">
 
+                    <div class="stat-card navy">
+                        <div class="stat-info">
+                            <div class="stat-num">
+                                <?= $total_transaksi ?>
+                            </div>
+                            <div class="stat-label">
+                                Total Transaksi
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card teal">
+                        <div class="stat-info">
+                            <div class="stat-num">
+                                <?= $transaksi_hari_ini ?>
+                            </div>
+                            <div class="stat-label">
+                                Hari Ini
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card amber">
+                        <div class="stat-info">
+                            <div class="stat-num">
+                                <?= $transaksi_bulan_ini ?>
+                            </div>
+                            <div class="stat-label">
+                                Bulan Ini
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
                 <div class="table-wrap">
                     <?php if ($result && $result->num_rows > 0): ?>
                     <table>
@@ -125,11 +187,11 @@ $result = $koneksi->query(
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="edit.php?id=<?= $row['id_transaksi'] ?>" class="btn btn-amber btn-sm">✏️ Edit</a>
+                                        <a href="edit.php?id=<?= $row['id_transaksi'] ?>" class="btn btn-amber btn-sm"> Edit</a>
                                         <a href="hapus.php?id=<?= $row['id_transaksi'] ?>"
                                            class="btn btn-danger btn-sm"
                                            onclick="return confirm('Yakin hapus transaksi ini? Stok obat akan dikembalikan.')">
-                                           🗑️ Hapus
+                                            Hapus
                                         </a>
                                     </div>
                                 </td>
@@ -139,7 +201,7 @@ $result = $koneksi->query(
                     </table>
                     <?php else: ?>
                     <div class="empty">
-                        <span class="empty-icon">📋</span>
+                        <span class="empty-icon">—</span>
                         <p><?= $search ? 'Tidak ada transaksi yang cocok.' : 'Belum ada data pemberian obat.' ?></p>
                         <a href="tambah.php" class="btn btn-primary btn-sm">+ Catat Pemberian Pertama</a>
                     </div>

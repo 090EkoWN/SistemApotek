@@ -51,7 +51,7 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
 
             <?php if ($msg): ?>
             <div class="alert alert-<?= $type === 'success' ? 'success' : 'danger' ?>">
-                <span class="alert-icon"><?= $type === 'success' ? '✅' : '❌' ?></span>
+                <span class="alert-icon"><?= $type === 'success' ? '✓' : '!' ?>
                 <?php
                 $pesan = [
                     'tambah_ok' => 'Obat berhasil ditambahkan.',
@@ -65,19 +65,38 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
             <?php endif; ?>
 
             <div class="page-header">
+                <?php
+                $total_obat = $result ? $result->num_rows : 0;
+
+                $q_stok_habis = $koneksi->query(
+                    "SELECT COUNT(*) total
+                    FROM obat
+                    WHERE stok = 0"
+                );
+                $stok_habis = $q_stok_habis->fetch_assoc()['total'];
+
+                $q_expired = $koneksi->query(
+                    "SELECT COUNT(*) total
+                    FROM obat
+                    WHERE tanggal_expired <= CURDATE()"
+                );
+                $expired = $q_expired->fetch_assoc()['total'];
+                ?>
                 <div>
-                    <h1>💊 Data Obat</h1>
-                    <p>Kelola seluruh data stok obat apotek</p>
+                   <h1>Manajemen Obat</h1>
+                    <p>
+                        Kelola data obat, stok, harga, dan masa berlaku obat.
+                    </p>
                 </div>
                 <a href="tambah.php" class="btn btn-primary">+ Tambah Obat</a>
             </div>
 
             <div class="card">
                 <div class="card-head">
-                    <div class="card-title"><span class="card-icon">💊</span> Daftar Obat</div>
+                    <div class="card-title"> Daftar Obat</div>
                     <form method="GET" class="data-toolbar">
                         <input type="text" name="search" class="form-control"
-                            placeholder="🔍 Cari nama obat atau kategori..."
+                            placeholder="Cari nama obat atau kategori..."
                             value="<?= htmlspecialchars($search) ?>">
                         <button type="submit" class="btn btn-ghost btn-sm">Cari</button>
                         <?php if ($search): ?>
@@ -86,7 +105,42 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                         <span class="data-count"><?= $result ? $result->num_rows : 0 ?> data</span>
                     </form>
                 </div>
+                <div class="stats-row">
 
+                    <div class="stat-card navy">
+                        <div class="stat-info">
+                            <div class="stat-num">
+                                <?= $total_obat ?>
+                            </div>
+                            <div class="stat-label">
+                                Total Obat
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card amber">
+                        <div class="stat-info">
+                            <div class="stat-num">
+                                <?= $stok_habis ?>
+                            </div>
+                            <div class="stat-label">
+                                Stok Habis
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card red">
+                        <div class="stat-info">
+                            <div class="stat-num">
+                                <?= $expired ?>
+                            </div>
+                            <div class="stat-label">
+                                Expired
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
                 <div class="table-wrap">
                     <?php if ($result && $result->num_rows > 0): ?>
                     <table>
@@ -115,14 +169,14 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                                 <td><span class="badge badge-navy"><?= htmlspecialchars($row['kategori']) ?></span></td>
                                 <td><span class="badge <?= $cls_stok ?>"><?= $row['stok'] ?></span></td>
                                 <td class="td-mono">Rp <?= number_format($row['harga'], 0, ',', '.') ?></td>
-                                <td><span class="badge <?= $cls_exp ?>"><?= date('d/m/Y', $expired) ?></span></td>
+                                <td><span class="badge <?= $cls_exp ?>"><?= date('d M Y', $expired) ?></span></td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="edit.php?id=<?= $row['id_obat'] ?>" class="btn btn-amber btn-sm">✏️ Edit</a>
+                                        <a href="edit.php?id=<?= $row['id_obat'] ?>" class="btn btn-amber btn-sm"> Edit</a>
                                         <a href="hapus.php?id=<?= $row['id_obat'] ?>"
                                            class="btn btn-danger btn-sm"
                                            onclick="return confirm('Yakin hapus obat ini?')">
-                                           🗑️ Hapus
+                                            Hapus
                                         </a>
                                     </div>
                                 </td>
@@ -132,7 +186,7 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                     </table>
                     <?php else: ?>
                     <div class="empty">
-                        <span class="empty-icon">💊</span>
+                        <span class="empty-icon">—</span>
                         <p><?= $search ? 'Tidak ada obat yang cocok.' : 'Belum ada data obat.' ?></p>
                         <a href="tambah.php" class="btn btn-primary btn-sm">+ Tambah Obat Pertama</a>
                     </div>

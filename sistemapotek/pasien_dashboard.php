@@ -61,7 +61,7 @@ if ($id_pasien) {
     <!-- SIDEBAR KHUSUS PASIEN -->
     <aside class="sidebar" id="sidebar">
         <div class="sb-brand">
-            <div class="sb-brand-icon">💊</div>
+            <div class="sb-brand-icon">PS</div>
             <div>
                 <div class="sb-brand-name"><?= APP_NAME ?></div>
                 <div class="sb-brand-sub">Portal Pasien</div>
@@ -72,17 +72,17 @@ if ($id_pasien) {
             <div class="sb-group-label">MENU PASIEN</div>
             
             <a href="pasien_dashboard.php" class="sb-item active">
-                <span class="sb-icon">🏠</span>
+                <span class="sb-icon">▣</span>
                 Dashboard
             </a>
             
             <a href="pasien_riwayat.php" class="sb-item">
-                <span class="sb-icon">📋</span>
+                <span class="sb-icon">▤</span>
                 Riwayat Obat
             </a>
             
             <a href="pasien_profil.php" class="sb-item">
-                <span class="sb-icon">👤</span>
+                <span class="sb-icon">◌</span>
                 Profil Saya
             </a>
         </nav>
@@ -96,7 +96,7 @@ if ($id_pasien) {
                 </div>
             </div>
             <a href="logout.php" class="sb-logout">
-                🚪 Keluar
+                Keluar
             </a>
         </div>
     </aside>
@@ -126,15 +126,19 @@ if ($id_pasien) {
         <div class="page-body">
             <div class="page-header">
                 <div>
-                    <h1>👋 Selamat datang, <?= htmlspecialchars($_SESSION['nama_lengkap']) ?>!</h1>
-                    <p>Portal informasi kesehatan dan riwayat pengobatan Anda</p>
+                    <h1>
+                        Portal Pasien
+                    </h1>
+                    <p>
+                        Pantau riwayat pengobatan dan informasi kesehatan Anda.
+                    </p>
                 </div>
             </div>
 
             <?php if (!$id_pasien): ?>
             <!-- Peringatan jika data pasien belum terhubung -->
             <div class="alert alert-warning">
-                <span class="alert-icon">⚠️</span>
+                <span class="alert-icon">!</span>
                 <div>
                     <strong>Data Belum Lengkap</strong><br>
                     Akun Anda belum terhubung dengan data pasien. Silakan hubungi administrator untuk melengkapi data Anda.
@@ -145,14 +149,14 @@ if ($id_pasien) {
             <!-- Statistik -->
             <div class="stats-row">
                 <div class="stat-card teal">
-                    <div class="stat-icon">📋</div>
+                    <div class="stat-icon">RJ</div>
                     <div class="stat-info">
                         <div class="stat-num"><?= $total_transaksi ?></div>
                         <div class="stat-label">Total Kunjungan</div>
                     </div>
                 </div>
                 <div class="stat-card navy">
-                    <div class="stat-icon">💊</div>
+                    <div class="stat-icon">OB</div>
                     <div class="stat-info">
                         <div class="stat-num"><?= $total_obat_diterima ?></div>
                         <div class="stat-label">Obat Diterima</div>
@@ -165,7 +169,6 @@ if ($id_pasien) {
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
-                        <span class="card-icon">👤</span>
                         Informasi Pribadi
                     </div>
                     <a href="pasien_profil.php" class="btn btn-sm btn-ghost">Edit Profil →</a>
@@ -197,7 +200,6 @@ if ($id_pasien) {
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
-                        <span class="card-icon">📋</span>
                         Riwayat Pemberian Obat Terbaru
                     </div>
                     <a href="pasien_riwayat.php" class="btn btn-sm btn-ghost">Lihat Semua →</a>
@@ -230,7 +232,6 @@ if ($id_pasien) {
                     </table>
                     <?php else: ?>
                     <div class="empty">
-                        <span class="empty-icon">📋</span>
                         <p>Belum ada riwayat pemberian obat</p>
                     </div>
                     <?php endif; ?>
@@ -241,13 +242,12 @@ if ($id_pasien) {
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
-                        <span class="card-icon">ℹ️</span>
                         Informasi Penting
                     </div>
                 </div>
                 <div class="card-body">
                     <div style="color:#64748b;line-height:1.8">
-                        <p><strong>📌 Petunjuk Penggunaan Portal Pasien:</strong></p>
+                        <p><strong> Petunjuk Penggunaan Portal Pasien:</strong></p>
                         <ul style="margin-left:1.5rem">
                             <li>Anda dapat melihat riwayat pengobatan Anda di menu <strong>"Riwayat Obat"</strong></li>
                             <li>Pastikan selalu mengikuti dosis yang tertera</li>

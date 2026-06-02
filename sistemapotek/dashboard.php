@@ -73,7 +73,10 @@ $hampir_expired = $koneksi->query(
             <!-- Page Header -->
             <div class="page-header">
                 <div>
-                    <h1>👋 Selamat datang, <?= htmlspecialchars($_SESSION['nama_lengkap']) ?>!</h1>
+                    <h1>
+                        Selamat Datang,
+                        <?= htmlspecialchars($_SESSION['nama_lengkap']) ?>
+                    </h1>
                     <p>Ringkasan data sistem apotek hari ini</p>
                 </div>
             </div>
@@ -81,28 +84,28 @@ $hampir_expired = $koneksi->query(
             <!-- Statistik -->
             <div class="stats-row">
                 <div class="stat-card teal">
-                    <div class="stat-icon">💊</div>
+                    <div class="stat-icon">OB</div>
                     <div class="stat-info">
                         <div class="stat-num"><?= $jml_obat ?></div>
                         <div class="stat-label">Total Data Obat</div>
                     </div>
                 </div>
                 <div class="stat-card navy">
-                    <div class="stat-icon">👤</div>
+                    <div class="stat-icon">PS</div>
                     <div class="stat-info">
                         <div class="stat-num"><?= $jml_pasien ?></div>
                         <div class="stat-label">Total Pasien</div>
                     </div>
                 </div>
                 <div class="stat-card amber">
-                    <div class="stat-icon">📋</div>
+                    <div class="stat-icon">TR</div>
                     <div class="stat-info">
                         <div class="stat-num"><?= $jml_transaksi ?></div>
                         <div class="stat-label">Total Transaksi</div>
                     </div>
                 </div>
                 <div class="stat-card red">
-                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-icon">ST</div>
                     <div class="stat-info">
                         <div class="stat-num"><?= $stok_habis ?></div>
                         <div class="stat-label">Stok Habis</div>
@@ -117,7 +120,7 @@ $hampir_expired = $koneksi->query(
                 <div class="card">
                     <div class="card-head">
                         <div class="card-title">
-                            <span class="card-icon">📋</span>
+                            <span class="card-icon"></span>
                             Transaksi Pemberian Obat Terbaru
                         </div>
                         <a href="transaksi/index.php" class="btn btn-sm btn-ghost">Lihat Semua →</a>
@@ -146,7 +149,7 @@ $hampir_expired = $koneksi->query(
                         </table>
                         <?php else: ?>
                         <div class="empty">
-                            <span class="empty-icon">📋</span>
+                            <span class="empty-icon">—</span>
                             <p>Belum ada transaksi pemberian obat</p>
                             <a href="transaksi/tambah.php" class="btn btn-primary btn-sm">+ Tambah Transaksi</a>
                         </div>
@@ -158,7 +161,6 @@ $hampir_expired = $koneksi->query(
                 <div class="card">
                     <div class="card-head">
                         <div class="card-title">
-                            <span class="card-icon">⚠️</span>
                             Obat Akan Expired (30 Hari)
                         </div>
                         <a href="obat/index.php" class="btn btn-sm btn-ghost">Kelola →</a>
@@ -168,7 +170,7 @@ $hampir_expired = $koneksi->query(
                             $sisa = (strtotime($row['tanggal_expired']) - time()) / 86400;
                         ?>
                         <div class="list-item">
-                            <div class="list-label">⚠️ <?= htmlspecialchars($row['nama_obat']) ?></div>
+                            <div class="list-label"><?= htmlspecialchars($row['nama_obat']) ?></div>
                             <div class="list-val">
                                 <span class="badge badge-red"><?= ceil($sisa) ?> hari</span>
                             </div>
@@ -176,7 +178,7 @@ $hampir_expired = $koneksi->query(
                         <?php endwhile; ?>
                     <?php else: ?>
                     <div class="empty">
-                        <span class="empty-icon">✅</span>
+                        <span class="empty-icon">✓</span>
                         <p>Semua obat masih dalam masa berlaku</p>
                     </div>
                     <?php endif; ?>
@@ -189,29 +191,28 @@ $hampir_expired = $koneksi->query(
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
-                        <span class="card-icon">⚡</span>
+                        <span class="card-icon"></span>
                         Akses Cepat
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="quick-links">
                         <a href="obat/tambah.php" class="quick-link-item ql-teal">
-                            <span class="ql-icon">💊</span>
+                            <div class="card-title">
+                        
+                            </div>
                             <strong>Tambah Obat</strong>
                             <em>Input stok obat baru</em>
                         </a>
                         <a href="pasien/tambah.php" class="quick-link-item ql-navy">
-                            <span class="ql-icon">👤</span>
                             <strong>Tambah Pasien</strong>
                             <em>Daftar pasien baru</em>
                         </a>
                         <a href="transaksi/tambah.php" class="quick-link-item ql-amber">
-                            <span class="ql-icon">📋</span>
                             <strong>Pemberian Obat</strong>
                             <em>Catat transaksi baru</em>
                         </a>
                         <a href="obat/index.php" class="quick-link-item ql-gray">
-                            <span class="ql-icon">📦</span>
                             <strong>Data Obat</strong>
                             <em>Lihat semua stok obat</em>
                         </a>
