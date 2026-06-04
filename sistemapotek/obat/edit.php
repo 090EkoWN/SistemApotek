@@ -54,6 +54,8 @@ $kategori_list = ['Analgesik','Antibiotik','Antasida','Vitamin','Antihistamin','
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Obat — <?= APP_NAME ?></title>
     <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/sidebar_extra.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-wrap">
@@ -61,7 +63,7 @@ $kategori_list = ['Analgesik','Antibiotik','Antasida','Vitamin','Antihistamin','
     <div class="main-content">
         <div class="topbar">
             <div class="topbar-left">
-                <button class="hamburger" onclick="toggleSidebar()">☰</button>
+                <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
                 <div class="topbar-title">
                     <h2>Edit Obat</h2>
                     <div class="topbar-breadcrumb">
@@ -75,15 +77,15 @@ $kategori_list = ['Analgesik','Antibiotik','Antasida','Vitamin','Antihistamin','
         <div class="page-body">
             <div class="page-header">
                 <div>
-                    <h1>✏️ Edit Data Obat</h1>
+                    <h1><i class="fa-solid fa-pen"></i> Edit Data Obat</h1>
                     <p>Perbarui informasi obat: <strong><?= htmlspecialchars($obat['nama_obat']) ?></strong></p>
                 </div>
-                <a href="index.php" class="btn btn-ghost">← Kembali</a>
+                <a href="index.php" class="btn btn-ghost"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
             </div>
 
             <?php if (!empty($errors)): ?>
             <div class="alert alert-danger">
-                <span class="alert-icon">❌</span>
+                <i class="fa-solid fa-circle-exclamation"></i>
                 <div><strong>Terdapat kesalahan:</strong>
                     <ul style="margin:.3rem 0 0 1rem">
                         <?php foreach ($errors as $e): ?><li><?= htmlspecialchars($e) ?></li><?php endforeach; ?>
@@ -94,7 +96,7 @@ $kategori_list = ['Analgesik','Antibiotik','Antasida','Vitamin','Antihistamin','
 
             <div class="card">
                 <div class="card-head">
-                    <div class="card-title"><span class="card-icon">📝</span> Form Edit Obat</div>
+                    <div class="card-title"><i class="fa-solid fa-pen-to-square"></i> Form Edit Obat</div>
                 </div>
                 <div class="card-body">
                     <form method="POST">
@@ -130,7 +132,7 @@ $kategori_list = ['Analgesik','Antibiotik','Antasida','Vitamin','Antihistamin','
                             </div>
                         </div>
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">💾 Simpan Perubahan</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button>
                             <a href="index.php" class="btn btn-ghost">Batal</a>
                         </div>
                     </form>

@@ -36,6 +36,8 @@ if ($has_id_user) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Pasien — <?= APP_NAME ?></title>
     <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/sidebar_extra.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-wrap">
@@ -43,7 +45,7 @@ if ($has_id_user) {
     <div class="main-content">
         <div class="topbar">
             <div class="topbar-left">
-                <button class="hamburger" onclick="toggleSidebar()">☰</button>
+                <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
                 <div class="topbar-title">
                     <h2>Data Pasien</h2>
                     <div class="topbar-breadcrumb">
@@ -60,7 +62,7 @@ if ($has_id_user) {
         <div class="page-body">
             <?php if ($msg): ?>
             <div class="alert alert-<?= $type === 'success' ? 'success' : 'danger' ?>">
-                <span class="alert-icon"><?= $type === 'success' ? '✓' : '!' ?></span>
+                <i class="fa-solid fa-circle-check"></i>
                 <?php
                 $pesan = [
                     'tambah_ok' => 'Data pasien berhasil ditambahkan.',
@@ -78,12 +80,12 @@ if ($has_id_user) {
                     <h1>Manajemen Pasien</h1>
                     <p>Kelola seluruh data pasien apotek</p>
                 </div>
-                <a href="tambah.php" class="btn btn-primary">+ Tambah Pasien</a>
+                <a href="tambah.php" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah Pasien</a>
             </div>
 
             <div class="card">
                 <div class="card-head">
-                    <div class="card-title"></span> Daftar Pasien</div>
+                    <div class="card-title"><i class="fa-solid fa-users"></i> Daftar Pasien</div>
                     <form method="GET" class="data-toolbar">
                         <input type="text" name="search" class="form-control"
                             placeholder="Cari nama pasien atau nomor telepon..."
@@ -199,7 +201,7 @@ if ($has_id_user) {
                                 <?php endif; ?>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="edit.php?id=<?= $row['id_pasien'] ?>" class="btn btn-amber btn-sm"> Edit</a>
+                                        <a href="edit.php?id=<?= $row['id_pasien'] ?>" class="btn btn-amber btn-sm"><i class="fa-solid fa-pen"></i> Edit</a>
                                         <a href="hapus.php?id=<?= $row['id_pasien'] ?>"
                                            class="btn btn-danger btn-sm"
                                            onclick="return confirm('Yakin hapus pasien ini?')">
@@ -213,16 +215,16 @@ if ($has_id_user) {
                     </table>
                     <?php else: ?>
                     <div class="empty">
-                        <span class="empty-icon">—</span>
+                        <i class="fa-regular fa-clipboard"></i>
                         <p><?= $search ? 'Tidak ada pasien yang cocok.' : 'Belum ada data pasien.' ?></p>
-                        <a href="tambah.php" class="btn btn-primary btn-sm">+ Tambah Pasien Pertama</a>
+                        <a href="tambah.php" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Tambah Pasien Pertama</a>
                     </div>
                     <?php endif; ?>
                 </div>
 
                 <div class="card-foot">
                     <span>Total: <strong><?= $result ? $result->num_rows : 0 ?></strong> pasien</span>
-                    <a href="tambah.php" class="btn btn-primary btn-sm">+ Tambah Pasien</a>
+                    <a href="tambah.php" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Tambah Pasien</a>
                 </div>
             </div>
         </div>

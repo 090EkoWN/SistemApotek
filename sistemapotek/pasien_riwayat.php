@@ -48,6 +48,8 @@ $riwayat = $koneksi->query($query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Obat — <?= APP_NAME ?></title>
     <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/sidebar_extra.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-wrap">
@@ -55,7 +57,7 @@ $riwayat = $koneksi->query($query);
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="sb-brand">
-            <div class="sb-brand-icon">PS</div>
+            <div class="sb-brand-icon"><i class="fa-solid fa-users"></i></div>
             <div>
                 <div class="sb-brand-name"><?= APP_NAME ?></div>
                 <div class="sb-brand-sub">Portal Pasien</div>
@@ -65,19 +67,14 @@ $riwayat = $koneksi->query($query);
         <nav class="sb-nav">
             <div class="sb-group-label">MENU PASIEN</div>
             
-            <a href="pasien_dashboard.php" class="sb-item">
-                <span class="sb-icon">▣</span>
-                Dashboard
+            <a href="pasien_dashboard.php" class="sb-item ">
+                <i class="fa-solid fa-gauge"></i> Dashboard
             </a>
-            
             <a href="pasien_riwayat.php" class="sb-item active">
-                <span class="sb-icon">▤</span>
-                Riwayat Obat
+                <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Obat
             </a>
-            
             <a href="pasien_profil.php" class="sb-item">
-                <span class="sb-icon">◌</span>
-                Profil Saya
+                <i class="fa-solid fa-user-pen"></i> Profil Saya
             </a>
         </nav>
 
@@ -97,7 +94,7 @@ $riwayat = $koneksi->query($query);
     <div class="main-content">
         <div class="topbar">
             <div class="topbar-left">
-                <button class="hamburger" onclick="toggleSidebar()">☰</button>
+                <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
                 <div class="topbar-title">
                     <h2>Riwayat Pemberian Obat</h2>
                     <div class="topbar-breadcrumb">
@@ -125,7 +122,7 @@ $riwayat = $koneksi->query($query);
 
             <?php if (!$id_pasien): ?>
             <div class="alert alert-warning">
-                <<span class="alert-icon">!</span>
+                <<i class="fa-solid fa-circle-exclamation"></i>
                 <div>
                     <strong>Data Tidak Tersedia</strong><br>
                     Akun Anda belum terhubung dengan data pasien. Hubungi administrator.
@@ -207,7 +204,7 @@ $riwayat = $koneksi->query($query);
                     </table>
                     <?php else: ?>
                     <div class="empty">
-                        <span class="empty-icon">—</span>
+                        <i class="fa-regular fa-clipboard"></i>
                         <p><?= $search ? 'Tidak ada hasil pencarian' : 'Belum ada riwayat pemberian obat' ?></p>
                     </div>
                     <?php endif; ?>

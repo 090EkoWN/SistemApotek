@@ -48,6 +48,8 @@ $kategori_list = ['Analgesik','Antibiotik','Antasida','Vitamin','Antihistamin','
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Obat — <?= APP_NAME ?></title>
     <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/sidebar_extra.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-wrap">
@@ -56,7 +58,7 @@ $kategori_list = ['Analgesik','Antibiotik','Antasida','Vitamin','Antihistamin','
     <div class="main-content">
         <div class="topbar">
             <div class="topbar-left">
-                <button class="hamburger" onclick="toggleSidebar()">☰</button>
+                <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
                 <div class="topbar-title">
                     <h2>Tambah Obat</h2>
                     <div class="topbar-breadcrumb">
@@ -71,16 +73,16 @@ $kategori_list = ['Analgesik','Antibiotik','Antasida','Vitamin','Antihistamin','
         <div class="page-body">
             <div class="page-header">
                 <div>
-                    <h1>💊 Tambah Obat Baru</h1>
+                    <h1>Tambah Obat Baru</h1>
                     <p>Isi form berikut untuk menambahkan data obat</p>
                 </div>
-                <a href="index.php" class="btn btn-ghost">← Kembali</a>
+                <a href="index.php" class="btn btn-ghost"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
             </div>
 
             <!-- Error -->
             <?php if (!empty($errors)): ?>
             <div class="alert alert-danger">
-                <span class="alert-icon">❌</span>
+                <i class="fa-solid fa-circle-exclamation"></i>
                 <div>
                     <strong>Terdapat kesalahan:</strong>
                     <ul style="margin:.3rem 0 0 1rem">
@@ -94,7 +96,7 @@ $kategori_list = ['Analgesik','Antibiotik','Antasida','Vitamin','Antihistamin','
 
             <div class="card">
                 <div class="card-head">
-                    <div class="card-title"><span class="card-icon">📝</span> Form Data Obat</div>
+                    <div class="card-title"><i class="fa-solid fa-pen-to-square"></i> Form Data Obat</div>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="">
@@ -150,7 +152,7 @@ $kategori_list = ['Analgesik','Antibiotik','Antasida','Vitamin','Antihistamin','
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">💾 Simpan Obat</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan Obat</button>
                             <a href="index.php" class="btn btn-ghost">Batal</a>
                         </div>
                     </form>

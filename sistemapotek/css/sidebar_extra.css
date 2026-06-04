@@ -1,0 +1,165 @@
+/* ================================================================
+   SIDEBAR REDESIGN — Dark dengan foto background
+   ================================================================ */
+
+:root {
+    --sidebar-w: 210px;
+}
+
+.sidebar {
+    width: var(--sidebar-w);
+    background: #0d1f3c;
+    border-right: none;
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    z-index: 200;
+    transition: transform .3s ease;
+    overflow: hidden;
+    box-shadow: 4px 0 24px rgba(0,0,0,.18);
+}
+
+/* Foto background sidebar via pseudo element */
+.sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg,
+            rgba(13,31,60,.92) 0%,
+            rgba(13,31,60,.80) 40%,
+            rgba(10,24,48,.95) 100%),
+        url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&q=80&auto=format&fit=crop')
+        center/cover no-repeat;
+    z-index: 0;
+}
+
+/* Semua konten sidebar di atas overlay */
+.sidebar > * { position: relative; z-index: 1; }
+
+/* Brand */
+.sb-brand {
+    padding: 1.1rem 1rem .9rem;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    flex-shrink: 0;
+}
+.sb-brand-icon {
+    width: 34px; height: 34px;
+    background: var(--green);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: .9rem; flex-shrink: 0;
+    box-shadow: 0 3px 12px rgba(16,185,129,.45);
+}
+.sb-brand-name { font-size: .83rem; font-weight: 700; color: #fff; }
+.sb-brand-sub  { font-size: .57rem; color: rgba(255,255,255,.4); letter-spacing: .07em; text-transform: uppercase; }
+
+/* Nav */
+.sb-nav { padding: .6rem 0; flex: 1; overflow-y: auto; scrollbar-width: none; }
+.sb-nav::-webkit-scrollbar { display: none; }
+
+.sb-group-label {
+    font-size: .57rem;
+    font-weight: 700;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.3);
+    padding: .65rem .9rem .2rem;
+}
+.sb-item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .52rem .9rem;
+    margin: 2px .55rem;
+    color: rgba(255,255,255,.55);
+    font-size: .81rem;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all .18s ease;
+}
+.sb-item:hover {
+    background: rgba(255,255,255,.08);
+    color: #fff;
+    text-decoration: none;
+}
+.sb-item.active {
+    background: var(--green);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 3px 14px rgba(16,185,129,.4);
+}
+.sb-item i {
+    width: 15px;
+    text-align: center;
+    font-size: .8rem;
+    flex-shrink: 0;
+}
+.sb-item.active i { color: #fff; }
+
+/* Footer */
+.sb-footer {
+    flex-shrink: 0;
+    padding: .7rem .75rem .85rem;
+    border-top: 1px solid rgba(255,255,255,.08);
+    background: rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+}
+.sb-user {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .5rem .65rem;
+    border-radius: 9px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.1);
+    margin-bottom: .5rem;
+}
+.sb-avatar {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--green), var(--green-dk));
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.sb-uname { font-size: .76rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+.sb-urole  { font-size: .61rem; color: rgba(255,255,255,.4); }
+.sb-logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    width: 100%;
+    padding: .44rem;
+    background: rgba(239,68,68,.15);
+    border: 1px solid rgba(239,68,68,.3);
+    color: #fca5a5;
+    border-radius: 8px;
+    font-size: .76rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .18s ease;
+    text-decoration: none;
+    font-family: var(--font);
+}
+.sb-logout:hover {
+    background: rgba(239,68,68,.3);
+    color: #fff;
+    border-color: rgba(239,68,68,.6);
+    text-decoration: none;
+}
+
+/* Main content menyesuaikan sidebar width baru */
+.main-content { margin-left: var(--sidebar-w); }
+
+@media(max-width:768px){
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); box-shadow: 8px 0 32px rgba(0,0,0,.35); }
+    .main-content { margin-left: 0; }
+}

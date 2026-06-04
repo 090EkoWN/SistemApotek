@@ -31,6 +31,8 @@ $result = $koneksi->query(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pemberian Obat — <?= APP_NAME ?></title>
     <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/sidebar_extra.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-wrap">
@@ -39,7 +41,7 @@ $result = $koneksi->query(
 
         <div class="topbar">
             <div class="topbar-left">
-                <button class="hamburger" onclick="toggleSidebar()">☰</button>
+                <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
                 <div class="topbar-title">
                     <h2>Pemberian Obat</h2>
                     <div class="topbar-breadcrumb">
@@ -57,7 +59,7 @@ $result = $koneksi->query(
 
             <?php if ($msg): ?>
             <div class="alert alert-<?= $type === 'success' ? 'success' : 'danger' ?>">
-                <span class="alert-icon"><?= $type === 'success' ? '✓' : '!' ?>
+                <i class="fa-solid fa-circle-check"></i>
                 <?php
                 $pesan = [
                     'tambah_ok'  => 'Pemberian obat berhasil dicatat.',
@@ -108,7 +110,7 @@ $result = $koneksi->query(
 
             <div class="card">
                 <div class="card-head">
-                    <div class="card-title"></span> Daftar Transaksi</div>
+                    <div class="card-title"><i class="fa-solid fa-clipboard-list"></i> Daftar Transaksi</div>
                     <form method="GET" class="data-toolbar">
                         <input type="text" name="search" class="form-control"
                             placeholder=" Cari nama pasien atau obat..."
@@ -187,7 +189,7 @@ $result = $koneksi->query(
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="edit.php?id=<?= $row['id_transaksi'] ?>" class="btn btn-amber btn-sm"> Edit</a>
+                                        <a href="edit.php?id=<?= $row['id_transaksi'] ?>" class="btn btn-amber btn-sm"><i class="fa-solid fa-pen"></i> Edit</a>
                                         <a href="hapus.php?id=<?= $row['id_transaksi'] ?>"
                                            class="btn btn-danger btn-sm"
                                            onclick="return confirm('Yakin hapus transaksi ini? Stok obat akan dikembalikan.')">
@@ -201,7 +203,7 @@ $result = $koneksi->query(
                     </table>
                     <?php else: ?>
                     <div class="empty">
-                        <span class="empty-icon">—</span>
+                        <i class="fa-regular fa-clipboard"></i>
                         <p><?= $search ? 'Tidak ada transaksi yang cocok.' : 'Belum ada data pemberian obat.' ?></p>
                         <a href="tambah.php" class="btn btn-primary btn-sm">+ Catat Pemberian Pertama</a>
                     </div>

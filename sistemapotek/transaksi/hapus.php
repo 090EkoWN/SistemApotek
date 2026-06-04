@@ -116,6 +116,8 @@ $obat_list   = $koneksi->query("SELECT id_obat, nama_obat, stok FROM obat ORDER 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Pemberian Obat — <?= APP_NAME ?></title>
     <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/sidebar_extra.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-wrap">
@@ -124,7 +126,7 @@ $obat_list   = $koneksi->query("SELECT id_obat, nama_obat, stok FROM obat ORDER 
 
         <div class="topbar">
             <div class="topbar-left">
-                <button class="hamburger" onclick="toggleSidebar()">☰</button>
+                <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
                 <div class="topbar-title">
                     <h2>Edit Pemberian Obat</h2>
                     <div class="topbar-breadcrumb">
@@ -143,15 +145,15 @@ $obat_list   = $koneksi->query("SELECT id_obat, nama_obat, stok FROM obat ORDER 
 
             <div class="page-header">
                 <div>
-                    <h1>✏️ Edit Data Pemberian Obat</h1>
+                    <h1><i class="fa-solid fa-pen"></i> Edit Data Pemberian Obat</h1>
                     <p>Perbarui informasi pemberian obat untuk <strong><?= htmlspecialchars($transaksi['nama_pasien']) ?></strong></p>
                 </div>
-                <a href="index.php" class="btn btn-ghost">← Kembali</a>
+                <a href="index.php" class="btn btn-ghost"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
             </div>
 
             <?php if (!empty($errors)): ?>
             <div class="alert alert-danger">
-                <span class="alert-icon">❌</span>
+                <i class="fa-solid fa-circle-exclamation"></i>
                 <div>
                     <strong>Terdapat kesalahan:</strong>
                     <ul style="margin:.3rem 0 0 1rem">
@@ -165,7 +167,7 @@ $obat_list   = $koneksi->query("SELECT id_obat, nama_obat, stok FROM obat ORDER 
 
             <div class="card">
                 <div class="card-head">
-                    <div class="card-title"><span class="card-icon">📝</span> Form Edit Pemberian Obat</div>
+                    <div class="card-title"><i class="fa-solid fa-pen-to-square"></i> Form Edit Pemberian Obat</div>
                 </div>
                 <div class="card-body">
                     <form method="POST">
@@ -236,7 +238,7 @@ $obat_list   = $koneksi->query("SELECT id_obat, nama_obat, stok FROM obat ORDER 
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">💾 Simpan Perubahan</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button>
                             <a href="index.php" class="btn btn-ghost">Batal</a>
                         </div>
 

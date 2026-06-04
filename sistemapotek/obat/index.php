@@ -24,6 +24,8 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Obat — <?= APP_NAME ?></title>
     <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/sidebar_extra.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="app-wrap">
@@ -32,7 +34,7 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
 
         <div class="topbar">
             <div class="topbar-left">
-                <button class="hamburger" onclick="toggleSidebar()">☰</button>
+                <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
                 <div class="topbar-title">
                     <h2>Data Obat</h2>
                     <div class="topbar-breadcrumb">
@@ -51,7 +53,7 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
 
             <?php if ($msg): ?>
             <div class="alert alert-<?= $type === 'success' ? 'success' : 'danger' ?>">
-                <span class="alert-icon"><?= $type === 'success' ? '✓' : '!' ?>
+                <i class="fa-solid fa-circle-check"></i>
                 <?php
                 $pesan = [
                     'tambah_ok' => 'Obat berhasil ditambahkan.',
@@ -88,7 +90,7 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                         Kelola data obat, stok, harga, dan masa berlaku obat.
                     </p>
                 </div>
-                <a href="tambah.php" class="btn btn-primary">+ Tambah Obat</a>
+                <a href="tambah.php" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah Obat</a>
             </div>
 
             <div class="card">
@@ -172,7 +174,7 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                                 <td><span class="badge <?= $cls_exp ?>"><?= date('d M Y', $expired) ?></span></td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="edit.php?id=<?= $row['id_obat'] ?>" class="btn btn-amber btn-sm"> Edit</a>
+                                        <a href="edit.php?id=<?= $row['id_obat'] ?>" class="btn btn-amber btn-sm"><i class="fa-solid fa-pen"></i> Edit</a>
                                         <a href="hapus.php?id=<?= $row['id_obat'] ?>"
                                            class="btn btn-danger btn-sm"
                                            onclick="return confirm('Yakin hapus obat ini?')">
@@ -186,16 +188,16 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                     </table>
                     <?php else: ?>
                     <div class="empty">
-                        <span class="empty-icon">—</span>
+                        <i class="fa-regular fa-clipboard"></i>
                         <p><?= $search ? 'Tidak ada obat yang cocok.' : 'Belum ada data obat.' ?></p>
-                        <a href="tambah.php" class="btn btn-primary btn-sm">+ Tambah Obat Pertama</a>
+                        <a href="tambah.php" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Tambah Obat Pertama</a>
                     </div>
                     <?php endif; ?>
                 </div>
 
                 <div class="card-foot">
                     <span>Total: <strong><?= $result ? $result->num_rows : 0 ?></strong> obat</span>
-                    <a href="tambah.php" class="btn btn-primary btn-sm">+ Tambah Obat</a>
+                    <a href="tambah.php" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Tambah Obat</a>
                 </div>
             </div>
 
