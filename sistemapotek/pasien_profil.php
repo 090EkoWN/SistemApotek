@@ -2,48 +2,62 @@
 // ============================================================
 // pasien_profil.php — Profil Pasien
 // ============================================================
+// Menyertakan file keamanan auth.php untuk memastikan pengguna sudah login
 require_once 'auth.php';
+// Menyertakan file koneksi database agar script bisa berinteraksi dengan MySQL
 require_once 'koneksi.php';
 
-// Cek role pasien
+// Memastikan bahwa pengguna yang mengakses memiliki level/peran (role) sebagai 'pasien'
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'pasien') {
+    // Jika bukan pasien, alihkan secara paksa ke halaman dashboard.php
     header('Location: dashboard.php');
-    exit();
+    exit(); // Menghentikan seluruh proses eksekusi kode di bawahnya
 }
 
+// Mengambil ID pengguna dari session login aktif
 $id_user = $_SESSION['id_user'];
 
-// Ambil data pasien
+// Mengambil data detail pasien dari database berdasarkan id_user yang sedang login
 $stmt = $koneksi->prepare("SELECT * FROM pasien WHERE id_user = ?");
-$stmt->bind_param('i', $id_user);
-$stmt->execute();
-$pasien = $stmt->get_result()->fetch_assoc();
-$stmt->close();
+$stmt->bind_param('i', $id_user); // Mengikat variabel id_user dengan tipe integer ('i')
+$stmt->execute(); // Menjalankan perintah SQL
+$pasien = $stmt->get_result()->fetch_assoc(); // Mengambil data hasil query dalam bentuk array asosiatif
+$stmt->close(); // Menutup statement untuk membebaskan resource memori
 
+// Menyiapkan variabel array untuk menampung pesan error validasi form
 $errors = [];
+// Menyiapkan variabel string untuk menampung pesan sukses
 $success = '';
 
-// Update profil
+// Proses penanganan form jika ada data yang dikirim dengan metode POST dan data pasien ditemukan
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
+    // Mengambil data No HP dan Alamat dari form input, lalu membersihkan spasi di awal/akhir teks
     $no_hp = trim($_POST['no_hp'] ?? '');
     $alamat = trim($_POST['alamat'] ?? '');
     
+    // Validasi input: Jika kosong, masukkan pesan error yang sesuai ke dalam array $errors
     if (empty($no_hp)) $errors[] = 'No. HP wajib diisi';
     if (empty($alamat)) $errors[] = 'Alamat wajib diisi';
     
+    // Jika tidak ada error sama sekali, lakukan proses update ke database
     if (empty($errors)) {
+        // Menyiapkan query UPDATE untuk mengubah data No HP dan Alamat pasien
         $stmt = $koneksi->prepare("UPDATE pasien SET no_hp=?, alamat=? WHERE id_pasien=?");
-        $stmt->bind_param('ssi', $no_hp, $alamat, $pasien['id_pasien']);
+        $stmt->bind_param('ssi', $no_hp, $alamat, $pasien['id_pasien']); // 'ssi' berarti string, string, integer
         
+        // Mengeksekusi query update tersebut
         if ($stmt->execute()) {
+            // Jika berhasil, isi pesan sukses
             $success = 'Profil berhasil diperbarui!';
-            // Refresh data
+            
+            // Mengambil kembali data terbaru dari database (Refresh Data) agar langsung tampil di form
             $stmt = $koneksi->prepare("SELECT * FROM pasien WHERE id_user = ?");
             $stmt->bind_param('i', $id_user);
             $stmt->execute();
             $pasien = $stmt->get_result()->fetch_assoc();
             $stmt->close();
         } else {
+            // Jika query gagal dieksekusi oleh database, masukkan pesan error
             $errors[] = 'Gagal memperbarui profil';
         }
     }
@@ -62,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
 <body>
 <div class="app-wrap">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="sb-brand">
             <div class="sb-brand-icon"><i class="fa-solid fa-users"></i></div>
@@ -98,7 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <div class="main-content">
         <div class="topbar">
             <div class="topbar-left">
@@ -161,7 +173,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
             </div>
             <?php else: ?>
 
-            <!-- Informasi Akun -->
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
@@ -189,7 +200,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
                 </div>
             </div>
 
-            <!-- Data Pribadi yang Bisa Diubah -->
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
@@ -240,8 +250,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $pasien) {
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
 <script>
+/* Fungsi JavaScript untuk memanipulasi class CSS agar sidebar muncul/sembunyi pada perangkat mobile */
 function toggleSidebar() {
+    // Menambah atau menghapus class 'open' pada elemen ber-class 'sidebar'
     document.querySelector('.sidebar').classList.toggle('open');
+    // Menambah atau menghapus class 'show' pada elemen ber-id 'overlay'
     document.getElementById('overlay').classList.toggle('show');
 }
 </script>

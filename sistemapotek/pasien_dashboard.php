@@ -1,40 +1,53 @@
 <?php
+// Menyertakan file keamanan auth.php untuk memastikan status login user
 require_once 'auth.php';
+// Menyertakan file koneksi database MySQL
 require_once 'koneksi.php';
 
+// Memeriksa apakah user yang masuk memiliki hak akses (role) sebagai 'pasien'
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'pasien') {
+    // Jika bukan pasien, alihkan paksa ke halaman dashboard utama dan hentikan script
     header('Location: dashboard.php'); exit();
 }
 
+// Mengambil ID pengguna dari data session yang aktif
 $id_user = $_SESSION['id_user'];
 
+// Menyiapkan statement SQL untuk mengambil data profil pasien berdasarkan id_user
 $stmt = $koneksi->prepare("SELECT * FROM pasien WHERE id_user = ?");
-$stmt->bind_param('i', $id_user);
-$stmt->execute();
-$data_pasien = $stmt->get_result()->fetch_assoc();
-$stmt->close();
+$stmt->bind_param('i', $id_user); // Mengikat nilai parameter dengan tipe data integer
+$stmt->execute(); // Mengeksekusi query ke database
+$data_pasien = $stmt->get_result()->fetch_assoc(); // Mengonversi hasil query menjadi array asosiatif
+$stmt->close(); // Menutup statement query
 
+// Menyimpan ID pasien jika ditemukan, jika tidak diset menjadi null
 $id_pasien = $data_pasien['id_pasien'] ?? null;
 
+// Menginisialisasi variabel counter statistik awal dengan nilai 0
 $total_transaksi    = 0;
 $total_obat_diterima = 0;
 
+// Jika ID pasien valid/ada di database, lakukan perhitungan statistik ringkas
 if ($id_pasien) {
+    // Query untuk menghitung jumlah baris/total kunjungan pemberian obat pada pasien terkait
     $res = $koneksi->query("SELECT COUNT(*) total FROM pemberian_obat WHERE id_pasien=$id_pasien");
     $total_transaksi = $res->fetch_assoc()['total'];
 
+    // Query untuk menjumlahkan (SUM) total kuantitas obat yang pernah diterima pasien terkait
     $res = $koneksi->query("SELECT SUM(jumlah) total FROM pemberian_obat WHERE id_pasien=$id_pasien");
-    $total_obat_diterima = $res->fetch_assoc()['total'] ?? 0;
+    $total_obat_diterima = $res->fetch_assoc()['total'] ?? 0; // Jika belum pernah menerima obat, default ke 0
 }
 
+// Menginisialisasi variabel riwayat awal
 $riwayat = null;
+// Jika ID pasien valid/ada, ambil 5 data riwayat pemberian obat yang paling terbaru
 if ($id_pasien) {
     $riwayat = $koneksi->query(
         "SELECT po.*, o.nama_obat, o.kategori
          FROM pemberian_obat po
          JOIN obat o ON po.id_obat=o.id_obat
          WHERE po.id_pasien=$id_pasien
-         ORDER BY po.tanggal_pemberian DESC LIMIT 5"
+         ORDER BY po.tanggal_pemberian DESC LIMIT 5" // Dibatasi hanya menampilkan maksimal 5 baris data terbaru
     );
 }
 ?>
@@ -51,7 +64,6 @@ if ($id_pasien) {
 <body>
 <div class="app-wrap">
 
-    <!-- SIDEBAR PASIEN -->
     <aside class="sidebar" id="sidebar">
         <div class="sb-brand">
             <div class="sb-brand-icon"><i class="fa-solid fa-heart-pulse"></i></div>
@@ -123,7 +135,6 @@ if ($id_pasien) {
             </div>
             <?php endif; ?>
 
-            <!-- Statistik -->
             <div class="stats-row" style="grid-template-columns:repeat(2,1fr);max-width:540px">
                 <div class="stat-card teal">
                     <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
@@ -142,7 +153,6 @@ if ($id_pasien) {
             </div>
 
             <?php if ($id_pasien && $data_pasien): ?>
-            <!-- Informasi Pribadi -->
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
@@ -175,7 +185,6 @@ if ($id_pasien) {
             </div>
             <?php endif; ?>
 
-            <!-- Riwayat Obat -->
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
@@ -220,7 +229,6 @@ if ($id_pasien) {
                 </div>
             </div>
 
-            <!-- Informasi Penting -->
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
@@ -251,9 +259,13 @@ if ($id_pasien) {
         </div>
     </div>
 </div>
+
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
 <script>
+/* Fungsi JavaScript pemicu event buka/tutup menu navigasi samping (Sidebar Mobile) */
 function toggleSidebar(){
+    // Menambah atau menghapus class 'open' pada komponen bersangkutan
     document.querySelector('.sidebar').classList.toggle('open');
     document.getElementById('overlay').classList.toggle('show');
 }

@@ -693,6 +693,7 @@ select.form-control {
     color: var(--g800); background: var(--g50);
     outline: none; transition: border-color var(--t), box-shadow var(--t), background var(--t);
     -webkit-appearance: none;
+    appearance: none;
 }
 .lf-input:hover  { border-color: var(--g300); }
 .lf-input:focus  {

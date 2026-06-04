@@ -2,43 +2,53 @@
 // ============================================================
 // pasien_riwayat.php — Riwayat Pemberian Obat (Pasien)
 // ============================================================
+// Menyertakan file validasi login/sesi pengguna
 require_once 'auth.php';
+// Menyertakan file koneksi ke database MySQL
 require_once 'koneksi.php';
 
-// Cek role pasien
+// Memastikan pengguna sudah login dan memiliki peran (role) sebagai 'pasien'
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'pasien') {
+    // Jika bukan pasien, tendang/alihkan paksa ke halaman dashboard utama
     header('Location: dashboard.php');
-    exit();
+    exit(); // Menghentikan eksekusi script selanjutnya
 }
 
+// Mengambil ID User dari data sesi login
 $id_user = $_SESSION['id_user'];
 
-// Cari id_pasien
+// Menyiapkan query untuk mencari 'id_pasien' yang terkait dengan 'id_user' tersebut
 $stmt = $koneksi->prepare("SELECT id_pasien FROM pasien WHERE id_user = ?");
-$stmt->bind_param('i', $id_user);
-$stmt->execute();
-$result = $stmt->get_result();
-$pasien_data = $result->fetch_assoc();
-$stmt->close();
+$stmt->bind_param('i', $id_user); // Mengikat parameter ID user dengan tipe data integer
+$stmt->execute(); // Menjalankan query
+$result = $stmt->get_result(); // Mengambil hasil query
+$pasien_data = $result->fetch_assoc(); // Mengubah hasil menjadi array asosiatif
+$stmt->close(); // Menutup statement query untuk efisiensi memori
 
+// Menyimpan id_pasien, jika tidak ditemukan di database maka diberi nilai null
 $id_pasien = $pasien_data['id_pasien'] ?? null;
 
-// Search
+// Mengambil kata kunci pencarian dari URL (metode GET), membersihkan spasi di awal/akhir
 $search = trim($_GET['search'] ?? '');
+// Jika id_pasien ada, buat kondisi WHERE dasar. Jika tidak ada, buat kondisi palsu (1=0) agar tidak menampilkan data orang lain
 $where_clause = $id_pasien ? "WHERE po.id_pasien = $id_pasien" : "WHERE 1=0";
 
+// Jika pengguna melakukan pencarian kata kunci
 if ($search) {
+    // Mengamankan input string dari karakter berbahaya (SQL Injection) sebelum dimasukkan ke query
     $search_safe = $koneksi->real_escape_string($search);
+    // Menambahkan kondisi pencarian berdasarkan nama obat ATAU dosis obat
     $where_clause .= " AND (o.nama_obat LIKE '%$search_safe%' OR po.dosis LIKE '%$search_safe%')";
 }
 
-// Query riwayat
+// Menyusun query lengkap untuk mengambil riwayat obat dengan menggabungkan (JOIN) tabel pemberian_obat dan tabel obat
 $query = "SELECT po.*, o.nama_obat, o.kategori
           FROM pemberian_obat po
           JOIN obat o ON po.id_obat = o.id_obat
           $where_clause
-          ORDER BY po.tanggal_pemberian DESC";
+          ORDER BY po.tanggal_pemberian DESC"; // Mengurutkan dari yang paling baru
 
+// Mengeksekusi query riwayat obat ke database
 $riwayat = $koneksi->query($query);
 ?>
 <!DOCTYPE html>
@@ -54,7 +64,6 @@ $riwayat = $koneksi->query($query);
 <body>
 <div class="app-wrap">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="sb-brand">
             <div class="sb-brand-icon"><i class="fa-solid fa-users"></i></div>
@@ -90,7 +99,6 @@ $riwayat = $koneksi->query($query);
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <div class="main-content">
         <div class="topbar">
             <div class="topbar-left">
@@ -130,7 +138,6 @@ $riwayat = $koneksi->query($query);
             </div>
             <?php else: ?>
 
-            <!-- Search Bar -->
             <div class="card">
                 <div class="card-body">
                     <form method="GET" class="search-form">
@@ -144,8 +151,8 @@ $riwayat = $koneksi->query($query);
                     </form>
                 </div>
             </div>
+            
             <div class="stats-row">
-
             <div class="stat-card teal">
                 <div class="stat-info">
                     <div class="stat-num">
@@ -156,9 +163,8 @@ $riwayat = $koneksi->query($query);
                 </div>
             </div>
             </div>
-
             </div>
-            <!-- Tabel Riwayat -->
+            
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
@@ -187,7 +193,8 @@ $riwayat = $koneksi->query($query);
                         </thead>
                         <tbody>
                             <?php 
-                            $no = 1;
+                            $no = 1; // Variabel counter untuk nomor urut tabel
+                            // Melakukan perulangan (looping) untuk memecah data riwayat baris demi baris
                             while ($row = $riwayat->fetch_assoc()): 
                             ?>
                             <tr>
@@ -220,8 +227,11 @@ $riwayat = $koneksi->query($query);
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
 <script>
+/* Fungsi JavaScript untuk menyembunyikan atau menampilkan sidebar (Responsive Mobile) */
 function toggleSidebar() {
+    // Menambah/menghapus class 'open' pada elemen sidebar
     document.querySelector('.sidebar').classList.toggle('open');
+    // Menambah/menghapus class 'show' pada elemen overlay background
     document.getElementById('overlay').classList.toggle('show');
 }
 </script>

@@ -1,11 +1,25 @@
 <?php
+// Menyertakan file keamanan auth.php untuk memastikan status login user pengakses dashboard
 require_once 'auth.php';
+// Menyertakan file koneksi database MySQL
 require_once 'koneksi.php';
-$jml_obat      = $koneksi->query("SELECT COUNT(*) total FROM obat")->fetch_assoc()['total'];
+
+// Menghitung total data jenis obat yang terdaftar di database apotek
+$jml_obat       = $koneksi->query("SELECT COUNT(*) total FROM obat")->fetch_assoc()['total'];
+
+// Menghitung total data pasien yang terdaftar di sistem
 $jml_pasien    = $koneksi->query("SELECT COUNT(*) total FROM pasien")->fetch_assoc()['total'];
+
+// Menghitung keseluruhan riwayat log transaksi pemberian obat yang pernah dicatat
 $jml_transaksi = $koneksi->query("SELECT COUNT(*) total FROM pemberian_obat")->fetch_assoc()['total'];
+
+// Menghitung total item obat yang saat ini jumlah stoknya kosong (stok = 0)
 $stok_habis    = $koneksi->query("SELECT COUNT(*) total FROM obat WHERE stok=0")->fetch_assoc()['total'];
+
+// Mengambil 5 transaksi pemberian obat paling terbaru, digabungkan dengan tabel pasien dan obat melalui INNER JOIN
 $transaksi_baru = $koneksi->query("SELECT po.id_transaksi,p.nama_pasien,o.nama_obat,po.jumlah,po.tanggal_pemberian FROM pemberian_obat po JOIN pasien p ON po.id_pasien=p.id_pasien JOIN obat o ON po.id_obat=o.id_obat ORDER BY po.id_transaksi DESC LIMIT 5");
+
+// Mendeteksi data obat yang akan kedaluwarsa (expired) dalam jangka waktu maksimal 30 hari ke depan terhitung dari hari ini
 $hampir_expired = $koneksi->query("SELECT nama_obat,stok,tanggal_expired FROM obat WHERE tanggal_expired<=DATE_ADD(CURDATE(),INTERVAL 30 DAY) AND tanggal_expired>=CURDATE() ORDER BY tanggal_expired ASC LIMIT 5");
 ?>
 <!DOCTYPE html>
@@ -83,6 +97,7 @@ $hampir_expired = $koneksi->query("SELECT nama_obat,stok,tanggal_expired FROM ob
         </div>
 
         <div class="dash-grid">
+            
             <div class="card">
                 <div class="card-head">
                     <div class="card-title">
@@ -172,8 +187,11 @@ $hampir_expired = $koneksi->query("SELECT nama_obat,stok,tanggal_expired FROM ob
     </div>
 </div>
 </div>
+
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
 <script>
+/* Fungsi taktis JavaScript untuk merubah visibilitas (buka-tutup) bilah navigasi kiri di perangkat HP */
 function toggleSidebar(){
     document.querySelector('.sidebar').classList.toggle('open');
     document.getElementById('overlay').classList.toggle('show');

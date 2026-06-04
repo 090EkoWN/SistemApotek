@@ -2,30 +2,39 @@
 // ============================================================
 // pasien/index.php — Daftar Data Pasien
 // ============================================================
+// Menyertakan file keamanan auth.php untuk memastikan user telah login sebelum mengakses halaman ini
 require_once '../auth.php';
+// Menyertakan file koneksi database MySQL
 require_once '../koneksi.php';
 
+// Menangkap parameter pesan (msg) dan tipe alert (type) dari URL menggunakan null coalescing operator
 $msg    = $_GET['msg']    ?? '';
 $type   = $_GET['type']   ?? 'success';
+// Menangkap kata kunci pencarian dari form dan membersihkan spasi di awal/akhir string
 $search = trim($_GET['search'] ?? '');
 $where  = '';
 
+// Jika kolom pencarian diisi, siapkan klausa WHERE untuk memfilter nama pasien atau nomor HP
 if ($search !== '') {
+    // Mengamankan input pencarian dari ancaman SQL Injection menggunakan real_escape_string
     $s     = $koneksi->real_escape_string($search);
     $where = "WHERE p.nama_pasien LIKE '%$s%' OR p.no_hp LIKE '%$s%'";
 }
 
-// JOIN dengan users untuk tampilkan username (jika kolom id_user ada)
+// Memeriksa secara dinamis apakah kolom 'id_user' tersedia di dalam struktur tabel pasien
 $col_check = $koneksi->query("SHOW COLUMNS FROM pasien LIKE 'id_user'");
 $has_id_user = ($col_check && $col_check->num_rows > 0);
 
+// Eksekusi query berdasarkan ketersediaan kolom id_user untuk menghindari error basis data
 if ($has_id_user) {
+    // Jika kolom id_user ada, lakukan LEFT JOIN dengan tabel users untuk mengambil data username pasien
     $result = $koneksi->query(
         "SELECT p.*, u.username FROM pasien p
          LEFT JOIN users u ON p.id_user = u.id_user
          $where ORDER BY p.id_pasien DESC"
     );
 } else {
+    // Jika kolom id_user tidak ada, ambil data dari tabel pasien secara mandiri tanpa join
     $result = $koneksi->query("SELECT * FROM pasien p $where ORDER BY id_pasien DESC");
 }
 ?>
@@ -43,6 +52,7 @@ if ($has_id_user) {
 <div class="app-wrap">
     <?php include '../sidebar.php'; ?>
     <div class="main-content">
+        
         <div class="topbar">
             <div class="topbar-left">
                 <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
@@ -60,16 +70,19 @@ if ($has_id_user) {
         </div>
 
         <div class="page-body">
+            
             <?php if ($msg): ?>
             <div class="alert alert-<?= $type === 'success' ? 'success' : 'danger' ?>">
                 <i class="fa-solid fa-circle-check"></i>
                 <?php
+                // Kamus data untuk menerjemahkan query string msg menjadi pesan teks bahasa Indonesia
                 $pesan = [
                     'tambah_ok' => 'Data pasien berhasil ditambahkan.',
                     'edit_ok'   => 'Data pasien berhasil diperbarui.',
                     'hapus_ok'  => 'Data pasien berhasil dihapus.',
                     'gagal'     => 'Terjadi kesalahan. Silakan coba lagi.',
                 ];
+                // Menampilkan pesan yang sesuai atau menampilkan string mentah jika kode tidak terdaftar
                 echo $pesan[$msg] ?? htmlspecialchars($msg);
                 ?>
             </div>
@@ -97,68 +110,49 @@ if ($has_id_user) {
                         <span class="data-count"><?= $result ? $result->num_rows : 0 ?> data</span>
                     </form>
                 </div>
+                
                 <?php
+                // Menyimpan total pasien hasil query yang didapatkan
+                $total_pasien = $result ? $result->num_rows : 0;
 
-                $total_pasien =
-                $result
-                ? $result->num_rows
-                : 0;
-
+                // Menghitung total pasien yang sudah memiliki relasi akun login (id_user tidak kosong)
                 $q_login = $koneksi->query("
                 SELECT COUNT(*) total
                 FROM pasien
                 WHERE id_user IS NOT NULL
                 ");
+                $pasien_login = $q_login->fetch_assoc()['total'];
 
-                $pasien_login =
-                $q_login->fetch_assoc()['total'];
-
+                // Menghitung total pasien yang belum terhubung dengan akun login (id_user kosong)
                 $q_nonlogin = $koneksi->query("
                 SELECT COUNT(*) total
                 FROM pasien
                 WHERE id_user IS NULL
                 ");
-
-                $pasien_nonlogin =
-                $q_nonlogin->fetch_assoc()['total'];
-
+                $pasien_nonlogin = $q_nonlogin->fetch_assoc()['total'];
                 ?>
+                
                 <div class="stats-row">
-
                     <div class="stat-card navy">
                         <div class="stat-info">
-                            <div class="stat-num">
-                                <?= $total_pasien ?>
-                            </div>
-                            <div class="stat-label">
-                                Total Pasien
-                            </div>
+                            <div class="stat-num"><?= $total_pasien ?></div>
+                            <div class="stat-label">Total Pasien</div>
                         </div>
                     </div>
-
                     <div class="stat-card teal">
                         <div class="stat-info">
-                            <div class="stat-num">
-                                <?= $pasien_login ?>
-                            </div>
-                            <div class="stat-label">
-                                Akun Aktif
-                            </div>
+                            <div class="stat-num"><?= $pasien_login ?></div>
+                            <div class="stat-label">Akun Aktif</div>
                         </div>
                     </div>
-
                     <div class="stat-card amber">
                         <div class="stat-info">
-                            <div class="stat-num">
-                                <?= $pasien_nonlogin ?>
-                            </div>
-                            <div class="stat-label">
-                                Belum Terhubung
-                            </div>
+                            <div class="stat-num"><?= $pasien_nonlogin ?></div>
+                            <div class="stat-label">Belum Terhubung</div>
                         </div>
                     </div>
-
                 </div>
+
                 <div class="table-wrap">
                     <?php if ($result && $result->num_rows > 0): ?>
                     <table>
@@ -185,8 +179,8 @@ if ($has_id_user) {
                                 <td class="td-muted" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
                                     <?= htmlspecialchars($row['alamat']) ?>
                                 </td>
+                                
                                 <?php if ($has_id_user): ?>
-                                    
                                 <td>
                                     <?php if (!empty($row['username'])): ?>
                                     <span class="badge badge-teal">Aktif</span>
@@ -197,8 +191,8 @@ if ($has_id_user) {
                                     <?= htmlspecialchars($row['username']) ?>
                                     </div>
                                 </td>
-                                
                                 <?php endif; ?>
+
                                 <td>
                                     <div class="btn-group">
                                         <a href="edit.php?id=<?= $row['id_pasien'] ?>" class="btn btn-amber btn-sm"><i class="fa-solid fa-pen"></i> Edit</a>
@@ -230,7 +224,15 @@ if ($has_id_user) {
         </div>
     </div>
 </div>
+
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
-<script>function toggleSidebar(){document.querySelector('.sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');}</script>
+
+<script>
+/* Fungsi taktis JavaScript untuk memproses buka dan tutup navigasi menu sidebar pada platform mobile */
+function toggleSidebar(){
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('show');
+}
+</script>
 </body>
 </html>

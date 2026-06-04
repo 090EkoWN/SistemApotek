@@ -1,40 +1,59 @@
 <?php
+// Mengaktifkan pelaporan semua jenis error untuk mempermudah debugging selama masa pengembangan
 error_reporting(E_ALL);
+// Memastikan error ditampilkan langsung ke layar browser
 ini_set('display_errors', 1);
+// Memulai sesi PHP agar sistem bisa membaca dan menyimpan data session login pengguna
 session_start();
+// Menyertakan file koneksi database MySQL
 require_once 'koneksi.php';
 
+// Proteksi Pengalihan: Jika user sudah dalam keadaan login, tendang langsung ke dashboard masing-masing
 if (isset($_SESSION['id_user'])) {
+    // Jika role-nya pasien pindah ke pasien_dashboard.php, jika admin/lainnya ke dashboard.php
     header('Location: ' . (($_SESSION['role'] ?? '') === 'pasien' ? 'pasien_dashboard.php' : 'dashboard.php'));
-    exit();
+    exit(); // Menghentikan kelanjutan eksekusi script
 }
 
+// Inisialisasi variabel untuk menampung pesan error dan pesan sukses
 $error = $success = '';
+// Menangkap parameter 'msg' dari URL/metode GET untuk menampilkan notifikasi dinamis
 $msg = $_GET['msg'] ?? '';
 if ($msg === 'login')   $error   = 'Silakan login terlebih dahulu.';
 if ($msg === 'timeout') $error   = 'Sesi habis. Silakan login kembali.';
 if ($msg === 'logout')  $success = 'Anda berhasil keluar dari sistem.';
 
+// Mengecek apakah form dikirim melalui metode POST (saat tombol login ditekan)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Mengambil input username dan password serta membersihkan spasi di awal dan akhir teks
     $username = trim($_POST['username'] ?? '');
     $password = trim($_POST['password'] ?? '');
+    
+    // Validasi awal: Memastikan kedua field tidak dibiarkan kosong
     if (empty($username) || empty($password)) {
         $error = 'Username dan password wajib diisi.';
     } else {
+        // Menyiapkan prepared statement untuk mencari user berdasarkan username (mencegah SQL Injection)
         $stmt = $koneksi->prepare("SELECT id_user,username,password,nama_lengkap,role FROM users WHERE username=? LIMIT 1");
-        $stmt->bind_param('s', $username);
-        $stmt->execute();
-        $user = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
+        $stmt->bind_param('s', $username); // Mengikat parameter username dengan tipe string ('s')
+        $stmt->execute(); // Jalankan query
+        $user = $stmt->get_result()->fetch_assoc(); // Ambil baris data pengguna dalam bentuk array asosiatif
+        $stmt->close(); // Tutup statement query
+        
+        // Verifikasi keamanan ganda: password_verify (untuk hash modern) ATAU plain text (kompatibilitas data lama)
         if ($user && (password_verify($password, $user['password']) || $password === $user['password'])) {
+            // Jika valid, simpan data informasi user ke dalam superglobal $_SESSION
             $_SESSION['id_user']       = $user['id_user'];
             $_SESSION['username']      = $user['username'];
             $_SESSION['nama_lengkap']  = $user['nama_lengkap'];
-            $_SESSION['role']          = $user['role'] ?? 'admin';
-            $_SESSION['last_activity'] = time();
+            $_SESSION['role']          = $user['role'] ?? 'admin'; // Default role ke admin jika tidak diisi
+            $_SESSION['last_activity'] = time(); // Mencatat stempel waktu aktivitas terakhir untuk fitur timeout
+            
+            // Mengarahkan pengguna ke dashboard yang sesuai dengan peran (role) mereka
             header('Location: ' . ($_SESSION['role'] === 'pasien' ? 'pasien_dashboard.php' : 'dashboard.php'));
             exit();
         } else {
+            // Jika gagal, buat pesan error spesifik berdasarkan letak kesalahannya
             $error = $user ? 'Password salah. Coba lagi.' : 'Username tidak ditemukan.';
         }
     }
@@ -46,15 +65,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Login — <?= APP_NAME ?></title>
-<link rel="stylesheet" href="css/style.css">
+<link class="sub-css" rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 <div class="login-page">
 
-    <!-- KIRI — hero & branding -->
     <div class="login-left">
-        <!-- Logo -->
         <div class="login-logo">
             <div class="login-logo-icon"><i class="fa-solid fa-heart-pulse"></i></div>
             <div>
@@ -63,7 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
-        <!-- Hero teks -->
         <div class="login-hero">
             <h1>Kelola Apotek<br>Lebih <span>Cerdas.</span></h1>
             <p>
@@ -73,7 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         </div>
 
-        <!-- Stats -->
         <div>
             <p class="login-copy" style="margin-top:1.25rem">
                 &copy; <?= date('Y') ?> <?= APP_NAME ?>. All rights reserved.
@@ -81,7 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <!-- KANAN — form login -->
     <div class="login-right">
         <div class="login-card">
 
@@ -158,16 +172,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script>
-// Toggle show/hide password
+/* Fitur Interaktif JavaScript untuk Mengubah Tipe Input (Show/Hide Password) */
 document.getElementById('togglePw').addEventListener('click', function () {
-    const pw  = document.getElementById('password');
-    const ic  = document.getElementById('eyeIcon');
-    const btn = this;
+    const pw  = document.getElementById('password'); // Elemen input password
+    const ic  = document.getElementById('eyeIcon');  // Elemen icon mata
+    const btn = this;                               // Merujuk ke tombol ini sendiri
+    
+    // Memeriksa status tipe input saat ini
     if (pw.type === 'password') {
-        pw.type = 'text';
+        pw.type = 'text'; // Ubah tipe ke teks agar karakter terlihat
         btn.innerHTML = '<i class="fa-solid fa-eye-slash" id="eyeIcon"></i> Sembunyikan';
     } else {
-        pw.type = 'password';
+        pw.type = 'password'; // Kembalikan ke tipe password agar tersembunyi (* / •)
         btn.innerHTML = '<i class="fa-solid fa-eye" id="eyeIcon"></i> Tampilkan';
     }
 });

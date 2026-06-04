@@ -2,19 +2,26 @@
 // ============================================================
 // obat/index.php — Daftar Data Obat
 // ============================================================
+// Menyertakan file keamanan auth.php untuk memastikan user telah terautentikasi (login)
 require_once '../auth.php';
+// Menyertakan berkas koneksi database MySQL
 require_once '../koneksi.php';
 
+// Menangkap parameter pesan (msg) dan tipe alert (type) dari URL untuk sistem notifikasi
 $msg    = $_GET['msg']    ?? '';
 $type   = $_GET['type']   ?? 'success';
+// Menangkap kata kunci pencarian dari form dan menghapus spasi di awal/akhir string
 $search = trim($_GET['search'] ?? '');
 $where  = '';
 
+// Jika kolom pencarian diisi, buat klausa WHERE untuk memfilter nama obat atau kategori
 if ($search !== '') {
+    // Mengamankan input pencarian dari celah keamanan SQL Injection
     $s     = $koneksi->real_escape_string($search);
     $where = "WHERE nama_obat LIKE '%$s%' OR kategori LIKE '%$s%'";
 }
 
+// Menjalankan query untuk mengambil data obat dari database berdasarkan filter yang diterapkan
 $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
 ?>
 <!DOCTYPE html>
@@ -55,12 +62,14 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
             <div class="alert alert-<?= $type === 'success' ? 'success' : 'danger' ?>">
                 <i class="fa-solid fa-circle-check"></i>
                 <?php
+                // Array asosiatif bertindak sebagai kamus penerjemah kode pesan menjadi teks bahasa Indonesia
                 $pesan = [
                     'tambah_ok' => 'Obat berhasil ditambahkan.',
                     'edit_ok'   => 'Data obat berhasil diperbarui.',
                     'hapus_ok'  => 'Obat berhasil dihapus.',
                     'gagal'     => 'Terjadi kesalahan. Silakan coba lagi.',
                 ];
+                // Menampilkan pesan yang sesuai, atau menampilkan isi asli parameter jika tidak terdaftar di kamus
                 echo $pesan[$msg] ?? htmlspecialchars($msg);
                 ?>
             </div>
@@ -68,8 +77,10 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
 
             <div class="page-header">
                 <?php
+                // Menghitung jumlah total baris obat hasil query saat ini
                 $total_obat = $result ? $result->num_rows : 0;
 
+                // Mengambil jumlah produk obat yang memiliki jumlah stok sama dengan nol
                 $q_stok_habis = $koneksi->query(
                     "SELECT COUNT(*) total
                     FROM obat
@@ -77,6 +88,7 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                 );
                 $stok_habis = $q_stok_habis->fetch_assoc()['total'];
 
+                // Mengambil jumlah produk obat yang tanggal kedaluwarsanya kurang dari atau sama dengan hari ini
                 $q_expired = $koneksi->query(
                     "SELECT COUNT(*) total
                     FROM obat
@@ -86,9 +98,7 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                 ?>
                 <div>
                    <h1>Manajemen Obat</h1>
-                    <p>
-                        Kelola data obat, stok, harga, dan masa berlaku obat.
-                    </p>
+                    <p>Kelola data obat, stok, harga, dan masa berlaku obat.</p>
                 </div>
                 <a href="tambah.php" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambah Obat</a>
             </div>
@@ -107,42 +117,28 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                         <span class="data-count"><?= $result ? $result->num_rows : 0 ?> data</span>
                     </form>
                 </div>
-                <div class="stats-row">
 
+                <div class="stats-row">
                     <div class="stat-card navy">
                         <div class="stat-info">
-                            <div class="stat-num">
-                                <?= $total_obat ?>
-                            </div>
-                            <div class="stat-label">
-                                Total Obat
-                            </div>
+                            <div class="stat-num"><?= $total_obat ?></div>
+                            <div class="stat-label">Total Obat</div>
                         </div>
                     </div>
-
                     <div class="stat-card amber">
                         <div class="stat-info">
-                            <div class="stat-num">
-                                <?= $stok_habis ?>
-                            </div>
-                            <div class="stat-label">
-                                Stok Habis
-                            </div>
+                            <div class="stat-num"><?= $stok_habis ?></div>
+                            <div class="stat-label">Stok Habis</div>
                         </div>
                     </div>
-
                     <div class="stat-card red">
                         <div class="stat-info">
-                            <div class="stat-num">
-                                <?= $expired ?>
-                            </div>
-                            <div class="stat-label">
-                                Expired
-                            </div>
+                            <div class="stat-num"><?= $expired ?></div>
+                            <div class="stat-label">Expired</div>
                         </div>
                     </div>
-
                 </div>
+
                 <div class="table-wrap">
                     <?php if ($result && $result->num_rows > 0): ?>
                     <table>
@@ -159,10 +155,15 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                         </thead>
                         <tbody>
                             <?php $no = 1; while ($row = $result->fetch_assoc()):
+                                // Konversi tanggal kedaluwarsa dari database menjadi format timestamp lokal
                                 $expired    = strtotime($row['tanggal_expired']);
                                 $sekarang   = time();
+                                // Menghitung sisa hari sebelum expired dengan membagi selisih detik dengan total detik dalam 24 jam
                                 $sisa_hari  = ($expired - $sekarang) / 86400;
+                                
+                                // Penentuan warna badge expired secara dinamis berdasarkan sisa hari
                                 $cls_exp    = $sisa_hari < 0 ? 'badge-danger' : ($sisa_hari <= 30 ? 'badge-warning' : 'badge-teal');
+                                // Penentuan warna badge stok secara dinamis berdasarkan sisa kuantitas barang
                                 $cls_stok   = $row['stok'] == 0 ? 'badge-danger' : ($row['stok'] <= 10 ? 'badge-warning' : 'badge-teal');
                             ?>
                             <tr>
@@ -178,7 +179,7 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
                                         <a href="hapus.php?id=<?= $row['id_obat'] ?>"
                                            class="btn btn-danger btn-sm"
                                            onclick="return confirm('Yakin hapus obat ini?')">
-                                            Hapus
+                                             Hapus
                                         </a>
                                     </div>
                                 </td>
@@ -204,7 +205,15 @@ $result = $koneksi->query("SELECT * FROM obat $where ORDER BY id_obat DESC");
         </div>
     </div>
 </div>
+
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
-<script>function toggleSidebar(){document.querySelector('.sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');}</script>
+
+<script>
+/* Fungsi utilitas JavaScript untuk memicu buka-tutup navigasi sidebar menu mobile */
+function toggleSidebar(){
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('show');
+}
+</script>
 </body>
 </html>

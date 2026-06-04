@@ -2,19 +2,26 @@
 // ============================================================
 // transaksi/index.php — Daftar Pemberian Obat
 // ============================================================
+// Menyertakan file keamanan auth.php untuk memastikan user telah terautentikasi (login)
 require_once '../auth.php';
+// Menyertakan berkas koneksi untuk berinteraksi dengan database MySQL
 require_once '../koneksi.php';
 
+// Menangkap parameter pesan (msg) dan tipe alert (type) dari URL (metode GET) untuk sistem notifikasi
 $msg    = $_GET['msg']    ?? '';
 $type   = $_GET['type']   ?? 'success';
+// Menangkap kata kunci pencarian, sekaligus menghapus spasi di awal dan akhir teks
 $search = trim($_GET['search'] ?? '');
 $where  = '';
 
+// Jika kolom pencarian diisi, buat klausa WHERE untuk memfilter nama pasien atau nama obat
 if ($search !== '') {
+    // Mengamankan input pencarian dari celah keamanan SQL Injection
     $s     = $koneksi->real_escape_string($search);
     $where = "WHERE p.nama_pasien LIKE '%$s%' OR o.nama_obat LIKE '%$s%'";
 }
 
+// Menjalankan query untuk mengambil data transaksi dengan menggabungkan tabel pasien dan obat (Relasi database)
 $result = $koneksi->query(
     "SELECT po.*, p.nama_pasien, o.nama_obat, o.harga
      FROM pemberian_obat po
@@ -61,6 +68,7 @@ $result = $koneksi->query(
             <div class="alert alert-<?= $type === 'success' ? 'success' : 'danger' ?>">
                 <i class="fa-solid fa-circle-check"></i>
                 <?php
+                // Array asosiatif bertindak sebagai kamus penerjemah kode pesan menjadi teks bahasa Indonesia
                 $pesan = [
                     'tambah_ok'  => 'Pemberian obat berhasil dicatat.',
                     'edit_ok'    => 'Transaksi berhasil diperbarui.',
@@ -68,6 +76,7 @@ $result = $koneksi->query(
                     'stok_habis' => 'Gagal: stok obat tidak mencukupi.',
                     'gagal'      => 'Terjadi kesalahan. Silakan coba lagi.',
                 ];
+                // Menampilkan pesan yang sesuai, atau menampilkan isi asli parameter jika tidak terdaftar di kamus
                 echo $pesan[$msg] ?? htmlspecialchars($msg);
                 ?>
             </div>
@@ -75,35 +84,29 @@ $result = $koneksi->query(
 
             <div class="page-header">
                 <?php
-                $total_transaksi =
-                $result
-                ? $result->num_rows
-                : 0;
+                // Menghitung jumlah total baris transaksi hasil query saat ini
+                $total_transaksi = $result ? $result->num_rows : 0;
 
+                // Mengambil jumlah transaksi khusus yang terjadi pada tanggal hari ini
                 $q_hari_ini = $koneksi->query("
                 SELECT COUNT(*) total
                 FROM pemberian_obat
                 WHERE DATE(tanggal_pemberian)=CURDATE()
                 ");
+                $transaksi_hari_ini = $q_hari_ini->fetch_assoc()['total'];
 
-                $transaksi_hari_ini =
-                $q_hari_ini->fetch_assoc()['total'];
-
+                // Mengambil jumlah transaksi khusus pada bulan dan tahun berjalan saat ini
                 $q_bulan_ini = $koneksi->query("
                 SELECT COUNT(*) total
                 FROM pemberian_obat
                 WHERE MONTH(tanggal_pemberian)=MONTH(CURDATE())
                 AND YEAR(tanggal_pemberian)=YEAR(CURDATE())
                 ");
-
-                $transaksi_bulan_ini =
-                $q_bulan_ini->fetch_assoc()['total'];
+                $transaksi_bulan_ini = $q_bulan_ini->fetch_assoc()['total'];
                 ?>
                 <div>
                     <h1>Manajemen Transaksi</h1>
-                    <p>
-                        Kelola dan pantau seluruh transaksi pemberian obat kepada pasien.
-                    </p>
+                    <p>Kelola dan pantau seluruh transaksi pemberian obat kepada pasien.</p>
                 </div>
                 <a href="tambah.php" class="btn btn-primary">+ Catat Pemberian</a>
             </div>
@@ -122,42 +125,28 @@ $result = $koneksi->query(
                         <span class="data-count"><?= $result ? $result->num_rows : 0 ?> data</span>
                     </form>
                 </div>
+                
                 <div class="stats-row">
-
                     <div class="stat-card navy">
                         <div class="stat-info">
-                            <div class="stat-num">
-                                <?= $total_transaksi ?>
-                            </div>
-                            <div class="stat-label">
-                                Total Transaksi
-                            </div>
+                            <div class="stat-num"><?= $total_transaksi ?></div>
+                            <div class="stat-label">Total Transaksi</div>
                         </div>
                     </div>
-
                     <div class="stat-card teal">
                         <div class="stat-info">
-                            <div class="stat-num">
-                                <?= $transaksi_hari_ini ?>
-                            </div>
-                            <div class="stat-label">
-                                Hari Ini
-                            </div>
+                            <div class="stat-num"><?= $transaksi_hari_ini ?></div>
+                            <div class="stat-label">Hari Ini</div>
                         </div>
                     </div>
-
                     <div class="stat-card amber">
                         <div class="stat-info">
-                            <div class="stat-num">
-                                <?= $transaksi_bulan_ini ?>
-                            </div>
-                            <div class="stat-label">
-                                Bulan Ini
-                            </div>
+                            <div class="stat-num"><?= $transaksi_bulan_ini ?></div>
+                            <div class="stat-label">Bulan Ini</div>
                         </div>
                     </div>
-
                 </div>
+
                 <div class="table-wrap">
                     <?php if ($result && $result->num_rows > 0): ?>
                     <table>
@@ -193,7 +182,7 @@ $result = $koneksi->query(
                                         <a href="hapus.php?id=<?= $row['id_transaksi'] ?>"
                                            class="btn btn-danger btn-sm"
                                            onclick="return confirm('Yakin hapus transaksi ini? Stok obat akan dikembalikan.')">
-                                            Hapus
+                                             Hapus
                                         </a>
                                     </div>
                                 </td>
@@ -219,7 +208,15 @@ $result = $koneksi->query(
         </div>
     </div>
 </div>
+
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
-<script>function toggleSidebar(){document.querySelector('.sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');}</script>
+
+<script>
+/* Fungsi utilitas JavaScript untuk memicu buka-tutup navigasi sidebar menu mobile */
+function toggleSidebar(){
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('show');
+}
+</script>
 </body>
 </html>
