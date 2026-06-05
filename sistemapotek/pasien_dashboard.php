@@ -250,7 +250,7 @@ if ($id_pasien) {
                             <i class="fa-solid fa-phone" style="color:var(--green)"></i> Kontak Apotek
                         </p>
                         <p style="font-size:.84rem;color:var(--g600)">
-                            Telepon: 0821-XXXX-XXXX<br>Email: info@apoteksehat.com
+                            Telepon: 0821-7555-1012<br>Email: info@apoteksehat.com
                         </p>
                     </div>
                 </div>
